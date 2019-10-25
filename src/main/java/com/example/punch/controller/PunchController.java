@@ -8,11 +8,14 @@ import com.example.punch.utils.ValidationUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +46,7 @@ public class PunchController {
         }
         BaseResponse baseResponse = new BaseResponse();
         try {
+            this.punchService.doPunch(punchNotesDTO);
 
             baseResponse.setResult("success").calcCostTime(beginTime);
         } catch (Exception e) {
@@ -55,8 +59,32 @@ public class PunchController {
         return baseResponse;
     }
 
+    @PostMapping("/queryByDate")
+    public BaseResponse<List<PunchNotesDTO>> queryByDate(@RequestBody(required = false) String time) {
+        long beginTime = System.currentTimeMillis();
+        BaseResponse baseResponse = new BaseResponse();
+        try {
+            List<PunchNotesDTO> list = this.punchService.queryAll(time);
+            baseResponse.setResult(list).calcCostTime(beginTime);
+        } catch (Exception e) {
+            log.error("查询list出现异常", e);
+            baseResponse.setStatusCode("200")
+                    .setResultCode(ServiceException.GENERAL_ERROR)
+                    .setResultMsg(e.getMessage())
+                    .calcCostTime(beginTime);
+        }
+        return baseResponse;
+    }
+
+
     @PostMapping("/record2")
     public void doPunch2(@RequestBody @Valid PunchNotesDTO punchNotesDTO, BindingResult bindingResult) {
-        System.err.println(bindingResult);
+        if (bindingResult.hasErrors()) {
+            List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+            for (FieldError fieldError : fieldErrors) {
+                System.err.println(fieldError.getField() + "@@" + fieldError.getDefaultMessage());
+            }
+        }
+
     }
 }

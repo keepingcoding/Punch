@@ -3,6 +3,7 @@ package com.example.punch.entity;
 import com.google.common.base.Converter;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.beans.BeanUtils;
 
 import javax.validation.constraints.NotNull;
@@ -13,6 +14,7 @@ import javax.validation.constraints.NotNull;
  */
 @Setter
 @Getter
+@ToString
 public class PunchNotesDTO {
 
     /** 打卡时间 **/
@@ -25,22 +27,4 @@ public class PunchNotesDTO {
     /** 备注 **/
     private String remark;
 
-    public PunchNotes covertToPunchNotes() {
-        PunchNotesConverter punchNotesConverter = new PunchNotesConverter();
-        return punchNotesConverter.convert(this);
-    }
-
-    private static class PunchNotesConverter extends Converter<PunchNotesDTO, PunchNotes> {
-        @Override
-        protected PunchNotes doForward(PunchNotesDTO punchNotesDTO) {
-            PunchNotes punchNotes = new PunchNotes();
-            BeanUtils.copyProperties(punchNotesDTO, punchNotes);
-            return punchNotes;
-        }
-
-        @Override
-        protected PunchNotesDTO doBackward(PunchNotes punchNotes) {
-            throw new AssertionError("不支持逆向转化方法!");
-        }
-    }
 }

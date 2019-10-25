@@ -2,7 +2,8 @@ var app = new Vue({
     el: '#app',
     data: {
         message: 'Hello Vue!',
-        nowTime: ''
+        nowTime: '',
+        items: []
     },
     methods: {
         doPunch: function () {
@@ -12,7 +13,7 @@ var app = new Vue({
                 url: "/record",
                 data: d
             }).then(function (res) {
-                console.log(res);
+                console.log(res.data);
             }).catch(function (err) {
                 console.log(err);
             });
@@ -31,11 +32,22 @@ var app = new Vue({
         },
         fillZero: function (num) {
             return num < 10 ? '0' + num : num;
+        },
+        queryRecords: function () {
+            var this_ = this;
+            axios({
+                method: "POST",
+                url: "/queryByDate",
+                data: ""
+            }).then(function (res) {
+                this_.items = res.data.result;
+            }).catch(function (err) {
+                console.log(err);
+            });
         }
     },
     created: function () {
-        var _this = this;
-        _this.nowTime = _this.formatDate();
+        this.nowTime = this.formatDate();
     },
     mounted: function () {
         var _this = this;

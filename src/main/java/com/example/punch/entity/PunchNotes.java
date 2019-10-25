@@ -2,6 +2,7 @@ package com.example.punch.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * @author zzs
@@ -9,6 +10,7 @@ import lombok.Setter;
  */
 @Setter
 @Getter
+@ToString
 public class PunchNotes {
 
     /** 打卡时间 **/

@@ -8,12 +8,37 @@
 
 <div id="app">
 
-    <span>{{ nowTime }}</span>
-    <hr/>
-    <button :click="doPunch">打卡</button>
+    <div>
+        <span>{{ nowTime }}</span>
+        <hr/>
+        <button @click="doPunch">打卡</button>
+    </div>
+
+    <div>
+        <button @click="queryRecords">查看打卡记录</button>
+
+        <table style="border-style: solid none solid none;">
+            <thead>
+            <tr style="text-align: center;">
+                <th style="width: 35px;">序号</th>
+                <th style="width: 180px;">打卡时间</th>
+                <th style="width: 200px;">打卡地点</th>
+                <th style="width: 200px;">备注</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="(b,index) in items">
+                <td v-text="index+1" style="text-align: center;"></td>
+                <td v-text="b.time" style="text-align: center;"></td>
+                <td v-text="b.location"></td>
+                <td v-text="b.remarks"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
 
 </div>
-
 
 <script src="/js/public/vue.min.js"></script>
 <script src="/js/public/axios.min.js"></script>
