@@ -1,10 +1,12 @@
 package com.example.punch.service.impl;
 
 import com.alibaba.fastjson.TypeReference;
+import com.example.punch.contract.Tuple;
 import com.example.punch.entity.PunchNotes;
 import com.example.punch.entity.PunchNotesDTO;
 import com.example.punch.service.PunchService;
 import com.example.punch.utils.BeanConverter;
+import com.example.punch.utils.FileUtil;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.io.FileWriteMode;
@@ -65,8 +67,8 @@ public class PunchServiceImpl implements PunchService {
         File file = getFile(fileName);
         log.info(">>> Get file [{}].", file.getCanonicalPath());
         Files.createParentDirs(file);
-        String fileSeparator = env.getProperty("punch.file.separator");
 
+        String fileSeparator = env.getProperty("punch.file.separator");
         StringBuilder sb = new StringBuilder();
         sb.append(punchNotes.getTime());
         sb.append(fileSeparator);
@@ -74,9 +76,32 @@ public class PunchServiceImpl implements PunchService {
         sb.append(fileSeparator);
         sb.append(punchNotes.getRemark() == null ? "" : punchNotes.getRemark());
         String res = sb.toString();
+        String writeData = res + System.lineSeparator();
         log.info(">>> The data currently being written is [{}].", res);
 
-        Files.asCharSink(file, Charset.forName("UTF-8"), FileWriteMode.APPEND).write(res + System.lineSeparator());
+        //读取文件最后一行，判断是否需要更新
+        Tuple<String> tuple = FileUtil.readLastLine(file);
+        if (tuple != null) {
+            String lastLine = tuple.getResult();
+            long lastIndex = tuple.getIndex();
+            List<String> list = Splitter.on(fileSeparator).trimResults().splitToList(lastLine);
+            //todo 目前逻辑是一天只能打一次卡
+            String oldStr = punchNotes.getTime().substring(0, 10);
+            if (list.get(0).contains(oldStr)) {
+                //更新
+                log.info(">>> The write mode is [update].");
+                FileUtil.writeFromIndex(file, lastIndex, writeData);
+            } else {
+                //追加
+                log.info(">>> The write mode is [add].");
+                Files.asCharSink(file, Charset.forName("UTF-8"), FileWriteMode.APPEND).write(writeData);
+            }
+        } else {
+            //追加
+            log.info(">>> The write mode is [add].");
+            Files.asCharSink(file, Charset.forName("UTF-8"), FileWriteMode.APPEND).write(writeData);
+        }
+
         log.info(">>> Write completion.");
     }
 
@@ -107,6 +132,7 @@ public class PunchServiceImpl implements PunchService {
                 res = readFromDb(fileName);
                 break;
         }
+        log.info(">>> Read [{}].", res.size());
         return BeanConverter.convert(res, new TypeReference<List<PunchNotesDTO>>(){});
     }
 
@@ -116,7 +142,7 @@ public class PunchServiceImpl implements PunchService {
         File file = getFile(fileName);
         if (!file.exists()) {
             log.error("文件[{}]不存在！", fileName);
-            throw new Exception("文件不存在！");
+            return Lists.newArrayList();
         }
         String fileSeparator = env.getProperty("punch.file.separator");
 
@@ -148,8 +174,14 @@ public class PunchServiceImpl implements PunchService {
     }
 
     private File getFile(String fileName) {
-        String rootUri = ClassUtils.getDefaultClassLoader().getResource("").getPath();
-        String parentPath = rootUri + File.separator + "records" + File.separator;
+        String configParentPath = env.getProperty("punch.file.store-path", "");
+        String parentPath;
+        if (StringUtils.hasText(configParentPath)) {
+            parentPath = configParentPath;
+        } else {
+            String rootUri = ClassUtils.getDefaultClassLoader().getResource("").getPath();
+            parentPath = rootUri + File.separator + "records" + File.separator;
+        }
         return new File(parentPath, fileName);
     }
 

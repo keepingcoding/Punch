@@ -1,5 +1,7 @@
 package com.example.punch.utils;
 
+import com.example.punch.contract.Tuple;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -12,77 +14,86 @@ import java.util.List;
  */
 public class FileUtil {
 
-    public static void main(String[] args) {
-        File file = new File("D:\\temp\\Ttt.java");
-        List<String> strings = readLastNLine(file, 2);
-        System.err.println(strings);
+    private FileUtil() {
     }
 
-    public static void readLastLine(File file) {
-        try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
-            long len = raf.length();
-            long pos = len - 1;
-            raf.seek(pos);
-            while (pos > 0) {
-                if (raf.readByte() == '\n') {
-                    String row = new String(raf.readLine().getBytes(), "UTF-8");
-                    System.out.println(row);
-                    break;
-                }
-                pos--;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+    /***
+     * 读取指定文件的最后一行
+     *
+     * @param file
+     * @return
+     */
+    public static Tuple<String> readLastLine(File file) {
+        Tuple<List<String>> tuple = readLastNLine(file, 1L);
+        if (tuple == null || tuple.getResult().isEmpty()) {
+            return null;
         }
+        return new Tuple<>(tuple.getIndex(), tuple.getResult().get(0));
     }
 
-
-    public static List<String> readLastNLine(File file, long numRead) {
+    /**
+     * 读取指定文件的最后N行
+     *
+     * @param file
+     * @param numRead
+     * @return
+     */
+    public static Tuple<List<String>> readLastNLine(File file, long numRead) {
         List<String> result = new ArrayList<>();
-        //定义行数
         long count = 0;
+        long lastFrom = 0;
         if (!file.exists() || file.isDirectory() || !file.canRead()) {
             return null;
         }
-        RandomAccessFile fileRead = null;
-        try {
-            fileRead = new RandomAccessFile(file, "r");
-            long length = fileRead.length();
+        try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
+            long length = raf.length();
             if (length == 0L) {
-                return result;
+                return new Tuple<>(lastFrom, result);
             } else {
                 long pos = length - 1;
                 while (pos > 0) {
+                    //先减一为了防止最后有一个换行而导致读取到null
+                    //如果文件最后有多个空行，这里先不考虑了
                     pos--;
-                    fileRead.seek(pos);
-                    if (fileRead.readByte() == '\n') {
-                        String line = new String(fileRead.readLine().getBytes(), "UTF-8");
-                        result.add(line);
+                    raf.seek(pos);
+                    if (raf.readByte() == '\n') {
+                        result.add(raf.readLine());
                         count++;
-                        if (count == numRead) {//满足指定行数 退出。
+                        if (count == numRead) {
+                            //记录位置，这时的pos指向'\n'，所以要+1
+                            lastFrom = pos + 1;
                             break;
                         }
                     }
                 }
 
+                //pos等于0，说明上边的where条件里的读取行数还不满足
                 if (pos == 0) {
-                    fileRead.seek(0);
-                    result.add(new String(fileRead.readLine().getBytes("ISO-8859-1"), "UTF-8"));
+                    raf.seek(0);
+                    result.add(raf.readLine());
+                    lastFrom = 0L;
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            if (fileRead != null) {
-                try {
-                    // 关闭资源
-                    fileRead.close();
-                } catch (Exception e) {
-                }
-            }
         }
-
-        return result;
+        return new Tuple<>(lastFrom, result);
     }
 
+    /**
+     * 从给定的指针位置开始写入数据
+     *
+     * @param file
+     * @param index
+     * @param data
+     */
+    public static void writeFromIndex(File file, long index, String data) {
+        try (RandomAccessFile raf = new RandomAccessFile(file, "rws")) {
+            raf.setLength(index);
+            raf.seek(index);
+            raf.write(data.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
