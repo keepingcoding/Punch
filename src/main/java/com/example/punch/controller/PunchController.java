@@ -2,20 +2,20 @@ package com.example.punch.controller;
 
 import com.example.punch.contract.BaseResponse;
 import com.example.punch.contract.exception.ServiceException;
-import com.example.punch.entity.PunchNotesDTO;
+import com.example.punch.model.PunchNotes;
+import com.example.punch.model.PunchNotesDTO;
 import com.example.punch.service.PunchService;
+import com.example.punch.utils.BeanConverter;
 import com.example.punch.utils.ValidationUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 import java.util.List;
 import java.util.Map;
 
@@ -46,7 +46,8 @@ public class PunchController {
         }
         BaseResponse baseResponse = new BaseResponse();
         try {
-            this.punchService.doPunch(punchNotesDTO);
+            PunchNotes punchNotes = BeanConverter.convert(punchNotesDTO, PunchNotes.class);
+            this.punchService.doPunch(punchNotes);
 
             baseResponse.setResult("success").calcCostTime(beginTime);
         } catch (Exception e) {

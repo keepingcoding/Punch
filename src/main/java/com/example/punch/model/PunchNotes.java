@@ -1,4 +1,4 @@
-package com.example.punch.entity;
+package com.example.punch.model;
 
 import lombok.Getter;
 import lombok.Setter;

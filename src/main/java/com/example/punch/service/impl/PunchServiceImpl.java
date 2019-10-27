@@ -2,8 +2,8 @@ package com.example.punch.service.impl;
 
 import com.alibaba.fastjson.TypeReference;
 import com.example.punch.contract.Tuple;
-import com.example.punch.entity.PunchNotes;
-import com.example.punch.entity.PunchNotesDTO;
+import com.example.punch.model.PunchNotes;
+import com.example.punch.model.PunchNotesDTO;
 import com.example.punch.service.PunchService;
 import com.example.punch.utils.BeanConverter;
 import com.example.punch.utils.FileUtil;
@@ -19,14 +19,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.Properties;
 
 import static com.example.punch.contract.CommonConstant.StorageType;
 
@@ -42,10 +43,12 @@ public class PunchServiceImpl implements PunchService {
     private Environment env;
 
     @Override
-    public void doPunch(PunchNotesDTO punchNotesDTO) throws Exception {
+    public void doPunch(PunchNotes punchNotes) throws Exception {
         log.info(">>>>>>>>>>>>>>>>>> Processing begins >>>>>>>>>>>>>>>>>>");
-        log.info(">>> Receive data [{}]", punchNotesDTO);
-        PunchNotes punchNotes = BeanConverter.convert(punchNotesDTO, PunchNotes.class);
+        if (punchNotes == null) {
+            throw new Exception("非法参数");
+        }
+        log.info(">>> Receive data [{}]", punchNotes);
 
         //默认存储到文件
         String punchType = env.getProperty("punch.type", StorageType.getCodeByNameEn("file"));
@@ -179,15 +182,57 @@ public class PunchServiceImpl implements PunchService {
         if (StringUtils.hasText(configParentPath)) {
             parentPath = configParentPath;
         } else {
-            String rootUri = ClassUtils.getDefaultClassLoader().getResource("").getPath();
+            String rootUri = getRootPath();
             parentPath = rootUri + File.separator + "records" + File.separator;
         }
         return new File(parentPath, fileName);
+    }
+
+    private String getRootPath() {
+        return ClassUtils.getDefaultClassLoader().getResource("").getPath();
     }
 
     /** 格式化日期 **/
     private String formatDate(Date date, String pattern) {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(pattern);
         return dateTimeFormatter.format(LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()));
+    }
+
+    /** 修改数据存储方式 **/
+    private void changeStoreType(String type) throws Exception {
+        boolean b = Objects.equals("0", type) || Objects.equals("1", type);
+        if (!b) {
+            log.error(">>> 参数[{}]非法", type);
+            throw new Exception("参数非法");
+        }
+        FileInputStream fis = null;
+        FileOutputStream fos = null;
+        try {
+            String rootPath = getRootPath();
+            String filePath = rootPath + File.separator + "config" + File.separator + "storeType.conf";
+
+            Properties prop = new Properties();
+            fis = new FileInputStream(filePath);
+            prop.load(fis);
+
+            fos = new FileOutputStream(filePath);
+            prop.setProperty("punch.type", type);
+            prop.store(fos, "### 打卡存储的方式：0 文件，1 数据库");
+        } catch (IOException e) {
+            log.error(">>> 修改配置出现异常", e);
+        } finally {
+            if (fis != null) {
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                }
+            }
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                }
+            }
+        }
     }
 }

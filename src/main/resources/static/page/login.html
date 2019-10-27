@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div id="loginApp">
+    <table>
+        <tbody>
+        <tr>
+            <td style="text-align: right">用户名：</td>
+            <td><input v-model="username" placeholder="请输入用户名……"/></td>
+        </tr>
+        <tr>
+            <td style="text-align: right">密码：</td>
+            <td><input v-model="password" type="password" placeholder="请输入密码……"/></td>
+        </tr>
+        <tr>
+            <td style="text-align: right">验证码：</td>
+            <td>
+                <input v-model="inputCode" placeholder="请输入验证码……"/>
+                <input type="button" class="btn yanzhengma"
+                       style="width: 90px; height: 44px; color: blue; font-size: 16px; font-style: italic; font-weight: 600; background-color: #eff2ff; border: 0px; border-radius: 0px !important;"
+                       v-model="code" @click="createCode"/>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <button @click="toLogin">登录</button>
+                <button @click="resetParams">重置</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

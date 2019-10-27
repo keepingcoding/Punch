@@ -1,12 +1,11 @@
-package com.example.punch.entity;
+package com.example.punch.model;
 
-import com.google.common.base.Converter;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.beans.BeanUtils;
 
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 /**
  * @author zzs
@@ -15,7 +14,7 @@ import javax.validation.constraints.NotNull;
 @Setter
 @Getter
 @ToString
-public class PunchNotesDTO {
+public class PunchNotesDTO implements Serializable {
 
     /** 打卡时间 **/
     @NotNull

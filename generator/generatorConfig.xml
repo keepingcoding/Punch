@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+	<!--
+		resource：配置资源加载地址，使用resource，MBG从classpath开始找，比如com/myproject/generatorConfig.properties        
+		url：配置资源加载地质，使用URL的方式，比如file:///C:/myfolder/generatorConfig.properties.	
+	-->
+	<properties url="file:///E:/Workspaces/GitHub/punch/generator/config.properties" />
+	
+    <!-- classPathEntry:数据库的JDBC驱动,换成你自己的驱动位置 -->
+    <classPathEntry location="${driverPath}"/>
+	
+	<!-- 
+		context:生成一组对象的环境 
+		id:必选，上下文id，用于在生成错误时提示
+		defaultModelType:指定生成对象的样式
+			1，conditional：类似hierarchical；
+			2，flat：所有内容（主键，blob）等全部生成在一个对象中；
+			3，hierarchical：主键生成一个XXKey对象(key class)，Blob等单独生成一个对象，其他简单属性在一个对象中(record class)
+		targetRuntime:
+			1，MyBatis3：默认的值，生成基于MyBatis3.x以上版本的内容，包括XXXBySample；
+			2，MyBatis3Simple：类似MyBatis3，只是不生成XXXBySample；
+		introspectedColumnImpl：类全限定名，用于扩展MBG
+	-->
+    <context id="MBG" targetRuntime="MyBatis3" defaultModelType="conditional">
+        <property name="javaFileEncoding" value="UTF-8"/>
+		<!-- 自动识别数据库关键字，默认false，如果设置为true，根据SqlReservedWords中定义的关键字列表；
+			一般保留默认值，遇到数据库关键字（Java关键字），使用columnOverride覆盖
+		-->	
+        <property name="autoDelimitKeywords" value="true"/>
+		<!-- beginningDelimiter和endingDelimiter：指明数据库的用于标记数据库对象名的符号，比如ORACLE就是双引号，MYSQL默认是`反引号，sqlserver是[]； -->
+        <property name="beginningDelimiter" value="`"/>
+        <property name="endingDelimiter" value="`"/>
+		
+		<!--<plugin type="org.mybatis.generator.plugins.KryoPlugin"/>-->
+        <plugin type="org.mybatis.generator.plugins.SerializablePlugin"/>
+        <plugin type="org.mybatis.generator.plugins.EqualsHashCodePlugin"/>
+        <plugin type="org.mybatis.generator.plugins.ToStringPlugin"/>
+		<plugin type="org.mybatis.generator.plugins.PaginationPlugin"/>
+
+        <commentGenerator>
+            <!-- 去除自动生成的日期注释 -->
+            <property name="suppressDate" value="true"/>
+			<!-- 是否去除自动生成的注释 true：是 ： false:否 -->
+            <property name="suppressAllComments" value="false" />
+			<!-- 是否添加数据库注释 -->
+			<property name="addRemarkComments" value="true" />
+			<!-- 是否只生成字段注释 -->
+			<property name="onlyBeanFieldComments" value="true" />
+        </commentGenerator>
+
+		<!-- jdbc连接 -->
+        <jdbcConnection driverClass="${driverClass}"
+                        connectionURL="${connectionURL}"
+                        userId="${username}" 
+						password="${password}"></jdbcConnection>
+
+		<!-- 类型转换 -->
+        <javaTypeResolver>
+            <property name="forceBigDecimals" value="false"/>
+        </javaTypeResolver>
+
+		<!-- java模型 -->
+        <javaModelGenerator targetPackage="${targetPackage}.model"
+                            targetProject="${targetProject}">
+            <property name="enableSubPackages" value="true"/>
+			<property name="trimStrings" value="true"/>
+        </javaModelGenerator>
+        
+		<!-- Example文件 -->
+		<javaExampleGenerator targetPackage="${targetPackage}.model.example"
+							  targetProject="${targetProject}">
+			<property name="enableSubPackages" value="true" />
+		</javaExampleGenerator>
+
+		<!-- XML文件 -->
+        <sqlMapGenerator targetPackage="${targetPackage_mappers}"
+                         targetProject="${targetProject_mappers}">
+            <property name="enableSubPackages" value="true"/>
+        </sqlMapGenerator>
+
+		<!-- Mapper接口 -->
+		<!--
+			type：选择怎么生成mapper接口（在MyBatis3/MyBatis3Simple下）：
+				1，ANNOTATEDMAPPER：会生成使用Mapper接口+Annotation的方式创建（SQL生成在annotation中），不会生成对应的XML；
+				2，MIXEDMAPPER：使用混合配置，会生成Mapper接口，并适当添加合适的Annotation，但是XML会生成在XML中；
+				3，XMLMAPPER：会生成Mapper接口，接口完全依赖XML；
+			注意，如果context是MyBatis3Simple：只支持ANNOTATEDMAPPER和XMLMAPPER		
+		-->
+        <javaClientGenerator type="XMLMAPPER" targetPackage="${targetPackage}.dao"
+                             targetProject="${targetProject}">
+            <property name="enableSubPackages" value="true"/>
+        </javaClientGenerator>
+
+        <!--
+            tableName为对应的数据库表,
+            domainObjectName是要生成的实体类,
+			如果想要mapper配置文件加入sql的where条件查询, 可以将enableCountByExample等设为true,
+			这样就会生成一个对应domainObjectName的Example类,
+            enableCountByExample等设为false时, 就不会生成对应的Example类了.
+        -->
+        
+		<table tableName="${tableName}" domainObjectName="${domainObjectName}"
+			enableCountByExample="true"
+			enableUpdateByExample="true"
+			enableDeleteByExample="true"
+			enableSelectByExample="true"
+			selectByExampleQueryId="false">
+			
+			<!--
+				generatedKey元素用来指定自动生成主键的属性（identity字段或者sequences序列）。 
+				如果指定了这个元素，MyBatis Generator (MBG)会在生成insert的SQL映射文件中插入一个合适的 selectKey 元素
+				（加了该元素mapper中insert语句不包含主键字段；不加则insert语句包含主键字段）
+					column			生成列的列名。
+					sqlStatement	将返回新值的 SQL 语句。如果这是一个identity列，您可以使用其中一个预定义的的特殊值。 或者为您的数据库使用一个合适的语句。 预先定义好的特殊值如下:
+					Cloudscape		这将转化为: VALUES IDENTITY_VAL_LOCAL()
+					DB2				这将转化为: VALUES IDENTITY_VAL_LOCAL()
+					DB2_MF			这将转化为: SELECT IDENTITY_VAL_LOCAL() FROM SYSIBM.SYSDUMMY1为运行在zOS（主框架）或者有些情况是iSeries (AS/400)上的DB2数据库使用该值
+					Derby			这将转化为: VALUES IDENTITY_VAL_LOCAL()
+					HSQLDB			这将转化为: CALL IDENTITY()
+					Informix		这将转化为: select dbinfo('sqlca.sqlerrd1') from systables where tabid=1
+					MySql			这将转化为: SELECT LAST_INSERT_ID()
+					SqlServer		这将转化为: SELECT SCOPE_IDENTITY()
+					SYBASE			这将转化为: SELECT @@IDENTITY
+					JDBC			这会配置MBG使用MyBatis3支持的JDBC标准的生成key来生成代码。 这是一个独立于数据库获取标识列中的值的方法。
+										重要: 只有当目标运行为MyBatis3时才会产生正确的代码。 如果与iBATIS2一起使用目标运行时会产生运行时错误的代码。
+
+					可选属性：
+					identity	当设置为 true 时,该列会被标记为identity列， 并且 <selectKey> 元素会被插入在insert后面。 当设置为 false 时， <selectKey> 会插入到insert之前（通常是序列）。
+					type		如果指定，则此值将被添加为生成selectKey元素的类型。 此属性的值应该是"pre"或"post"。
+									重要: 如果指定此属性的值，然后生成selectKey元素将永远被放置在insert语句之前。				
+			-->
+			<generatedKey column="ID" sqlStatement="MySql" identity="true" />
+		</table>
+
+    </context>
+</generatorConfiguration>
