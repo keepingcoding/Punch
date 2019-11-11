@@ -1,4 +1,4 @@
-package com.example.punch.utils;
+package com.example.punch.util;
 
 import com.example.punch.contract.Tuple;
 
@@ -12,9 +12,9 @@ import java.util.List;
  * @author zzs
  * @date 2019/10/25 16:58
  */
-public class FileUtil {
+public class FileUtils {
 
-    private FileUtil() {
+    private FileUtils() {
     }
 
     /***

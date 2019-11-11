@@ -1,6 +1,5 @@
 package com.example.punch.contract;
 
-import com.example.punch.contract.exception.ServiceException;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -9,20 +8,16 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author zzs
- * @date 2019/9/26 14:43
- */
 @Getter
 @Setter
 @Accessors(chain = true)
 public class BaseResponse<T> implements Serializable {
 
-    /** 状态吗 **/
-    private String statusCode = "200";
+    /** 调用成功与否 **/
+    private boolean success = true;
 
-    /** 业务状态码 **/
-    private String resultCode = "200";
+    /** 业务处理代码 **/
+    private String resultCode = ServiceStatus.API_OK.getCode();
 
     /** 状态描述 **/
     private String resultMsg = "ok";
@@ -43,33 +38,15 @@ public class BaseResponse<T> implements Serializable {
         this.result = result;
     }
 
-
-    public BaseResponse(String statusCode, String resultMsg) {
-        this.statusCode = statusCode;
-        this.resultMsg = resultMsg;
-    }
-
-    public BaseResponse(ServiceException e) {
-        this(e.getStatusCode(), e.getResultCode(), e.getMessage());
-    }
-
     public BaseResponse(Map<String, List<String>> validationErrors) {
-        this(ServiceException.PARAM_VERIFY_EXCEPTION, validationErrors);
-    }
-
-    public BaseResponse(ServiceException e, Map<String, List<String>> validationErrors) {
-        this(e);
+        this.success = false;
+        this.resultCode = ServiceStatus.VALIDATE_ERROR.getCode();
+        this.resultMsg = ServiceStatus.VALIDATE_ERROR.getDescription();
         this.validationErrors = validationErrors;
     }
 
-    public BaseResponse(String statusCode, String resultCode, String resultMsg) {
-        this.statusCode = statusCode;
-        this.resultCode = resultCode;
-        this.resultMsg = resultMsg;
-    }
-
     public long calcCostTime(long beginTime) {
-        costTime = System.currentTimeMillis() - beginTime;
-        return costTime;
+        this.costTime = System.currentTimeMillis() - beginTime;
+        return this.costTime;
     }
 }

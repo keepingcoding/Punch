@@ -1,9 +1,9 @@
-package com.example.punch.utils;
+package com.example.punch.util;
 
 import javax.validation.*;
 import java.util.*;
 
-public class ValidationUtil {
+public class ValidationUtils {
     public static <T> Map<String, List<String>> validator(T t, HashSet<String> skipFields) {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
