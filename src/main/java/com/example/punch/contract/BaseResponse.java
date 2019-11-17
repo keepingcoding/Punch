@@ -35,6 +35,10 @@ public class BaseResponse<T> implements Serializable {
     }
 
     public BaseResponse(T result) {
+        this.success = true;
+        this.resultCode = ServiceStatus.API_OK.getCode();
+        this.resultMsg = "ok";
+        this.validationErrors = null;
         this.result = result;
     }
 

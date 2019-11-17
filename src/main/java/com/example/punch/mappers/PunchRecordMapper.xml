@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.punch.dao.PunchRecordMapper">
+  <resultMap id="BaseResultMap" type="com.example.punch.model.PunchRecord">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="punch_day" jdbcType="DATE" property="punchDay" />
+    <result column="punch_on_time" jdbcType="TIMESTAMP" property="punchOnTime" />
+    <result column="punch_off_time" jdbcType="TIMESTAMP" property="punchOffTime" />
+    <result column="punch_status" jdbcType="TINYINT" property="punchStatus" />
+    <result column="punch_on_addr" jdbcType="VARCHAR" property="punchOnAddr" />
+    <result column="punch_off_addr" jdbcType="VARCHAR" property="punchOffAddr" />
+    <result column="on_remark" jdbcType="VARCHAR" property="onRemark" />
+    <result column="off_remark" jdbcType="VARCHAR" property="offRemark" />
+    <result column="created_id" jdbcType="INTEGER" property="createdId" />
+    <result column="created_time" jdbcType="BIGINT" property="createdTime" />
+    <result column="updated_id" jdbcType="INTEGER" property="updatedId" />
+    <result column="updated_time" jdbcType="BIGINT" property="updatedTime" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, user_id, punch_day, punch_on_time, punch_off_time, punch_status, punch_on_addr, 
+    punch_off_addr, on_remark, off_remark, created_id, created_time, updated_id, updated_time
+  </sql>
+  <select id="selectByExample" parameterType="com.example.punch.model.example.PunchRecordExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'false' as QUERYID,
+    <include refid="Base_Column_List" />
+    from t_punch_record
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart &gt;= 0 and limitEnd &gt;= 0">
+      limit ${limitStart}, ${limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_punch_record
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_punch_record
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.example.punch.model.example.PunchRecordExample">
+    delete from t_punch_record
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.example.punch.model.PunchRecord">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into t_punch_record (user_id, punch_day, punch_on_time, 
+      punch_off_time, punch_status, punch_on_addr, 
+      punch_off_addr, on_remark, off_remark, 
+      created_id, created_time, updated_id, 
+      updated_time)
+    values (#{userId,jdbcType=INTEGER}, #{punchDay,jdbcType=DATE}, #{punchOnTime,jdbcType=TIMESTAMP}, 
+      #{punchOffTime,jdbcType=TIMESTAMP}, #{punchStatus,jdbcType=TINYINT}, #{punchOnAddr,jdbcType=VARCHAR}, 
+      #{punchOffAddr,jdbcType=VARCHAR}, #{onRemark,jdbcType=VARCHAR}, #{offRemark,jdbcType=VARCHAR}, 
+      #{createdId,jdbcType=INTEGER}, #{createdTime,jdbcType=BIGINT}, #{updatedId,jdbcType=INTEGER}, 
+      #{updatedTime,jdbcType=BIGINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.example.punch.model.PunchRecord">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into t_punch_record
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="punchDay != null">
+        punch_day,
+      </if>
+      <if test="punchOnTime != null">
+        punch_on_time,
+      </if>
+      <if test="punchOffTime != null">
+        punch_off_time,
+      </if>
+      <if test="punchStatus != null">
+        punch_status,
+      </if>
+      <if test="punchOnAddr != null">
+        punch_on_addr,
+      </if>
+      <if test="punchOffAddr != null">
+        punch_off_addr,
+      </if>
+      <if test="onRemark != null">
+        on_remark,
+      </if>
+      <if test="offRemark != null">
+        off_remark,
+      </if>
+      <if test="createdId != null">
+        created_id,
+      </if>
+      <if test="createdTime != null">
+        created_time,
+      </if>
+      <if test="updatedId != null">
+        updated_id,
+      </if>
+      <if test="updatedTime != null">
+        updated_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="punchDay != null">
+        #{punchDay,jdbcType=DATE},
+      </if>
+      <if test="punchOnTime != null">
+        #{punchOnTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="punchOffTime != null">
+        #{punchOffTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="punchStatus != null">
+        #{punchStatus,jdbcType=TINYINT},
+      </if>
+      <if test="punchOnAddr != null">
+        #{punchOnAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="punchOffAddr != null">
+        #{punchOffAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="onRemark != null">
+        #{onRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="offRemark != null">
+        #{offRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="createdId != null">
+        #{createdId,jdbcType=INTEGER},
+      </if>
+      <if test="createdTime != null">
+        #{createdTime,jdbcType=BIGINT},
+      </if>
+      <if test="updatedId != null">
+        #{updatedId,jdbcType=INTEGER},
+      </if>
+      <if test="updatedTime != null">
+        #{updatedTime,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.example.punch.model.example.PunchRecordExample" resultType="java.lang.Long">
+    select count(*) from t_punch_record
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update t_punch_record
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.userId != null">
+        user_id = #{record.userId,jdbcType=INTEGER},
+      </if>
+      <if test="record.punchDay != null">
+        punch_day = #{record.punchDay,jdbcType=DATE},
+      </if>
+      <if test="record.punchOnTime != null">
+        punch_on_time = #{record.punchOnTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.punchOffTime != null">
+        punch_off_time = #{record.punchOffTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.punchStatus != null">
+        punch_status = #{record.punchStatus,jdbcType=TINYINT},
+      </if>
+      <if test="record.punchOnAddr != null">
+        punch_on_addr = #{record.punchOnAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="record.punchOffAddr != null">
+        punch_off_addr = #{record.punchOffAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="record.onRemark != null">
+        on_remark = #{record.onRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="record.offRemark != null">
+        off_remark = #{record.offRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createdId != null">
+        created_id = #{record.createdId,jdbcType=INTEGER},
+      </if>
+      <if test="record.createdTime != null">
+        created_time = #{record.createdTime,jdbcType=BIGINT},
+      </if>
+      <if test="record.updatedId != null">
+        updated_id = #{record.updatedId,jdbcType=INTEGER},
+      </if>
+      <if test="record.updatedTime != null">
+        updated_time = #{record.updatedTime,jdbcType=BIGINT},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update t_punch_record
+    set id = #{record.id,jdbcType=INTEGER},
+      user_id = #{record.userId,jdbcType=INTEGER},
+      punch_day = #{record.punchDay,jdbcType=DATE},
+      punch_on_time = #{record.punchOnTime,jdbcType=TIMESTAMP},
+      punch_off_time = #{record.punchOffTime,jdbcType=TIMESTAMP},
+      punch_status = #{record.punchStatus,jdbcType=TINYINT},
+      punch_on_addr = #{record.punchOnAddr,jdbcType=VARCHAR},
+      punch_off_addr = #{record.punchOffAddr,jdbcType=VARCHAR},
+      on_remark = #{record.onRemark,jdbcType=VARCHAR},
+      off_remark = #{record.offRemark,jdbcType=VARCHAR},
+      created_id = #{record.createdId,jdbcType=INTEGER},
+      created_time = #{record.createdTime,jdbcType=BIGINT},
+      updated_id = #{record.updatedId,jdbcType=INTEGER},
+      updated_time = #{record.updatedTime,jdbcType=BIGINT}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.example.punch.model.PunchRecord">
+    update t_punch_record
+    <set>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="punchDay != null">
+        punch_day = #{punchDay,jdbcType=DATE},
+      </if>
+      <if test="punchOnTime != null">
+        punch_on_time = #{punchOnTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="punchOffTime != null">
+        punch_off_time = #{punchOffTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="punchStatus != null">
+        punch_status = #{punchStatus,jdbcType=TINYINT},
+      </if>
+      <if test="punchOnAddr != null">
+        punch_on_addr = #{punchOnAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="punchOffAddr != null">
+        punch_off_addr = #{punchOffAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="onRemark != null">
+        on_remark = #{onRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="offRemark != null">
+        off_remark = #{offRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="createdId != null">
+        created_id = #{createdId,jdbcType=INTEGER},
+      </if>
+      <if test="createdTime != null">
+        created_time = #{createdTime,jdbcType=BIGINT},
+      </if>
+      <if test="updatedId != null">
+        updated_id = #{updatedId,jdbcType=INTEGER},
+      </if>
+      <if test="updatedTime != null">
+        updated_time = #{updatedTime,jdbcType=BIGINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.example.punch.model.PunchRecord">
+    update t_punch_record
+    set user_id = #{userId,jdbcType=INTEGER},
+      punch_day = #{punchDay,jdbcType=DATE},
+      punch_on_time = #{punchOnTime,jdbcType=TIMESTAMP},
+      punch_off_time = #{punchOffTime,jdbcType=TIMESTAMP},
+      punch_status = #{punchStatus,jdbcType=TINYINT},
+      punch_on_addr = #{punchOnAddr,jdbcType=VARCHAR},
+      punch_off_addr = #{punchOffAddr,jdbcType=VARCHAR},
+      on_remark = #{onRemark,jdbcType=VARCHAR},
+      off_remark = #{offRemark,jdbcType=VARCHAR},
+      created_id = #{createdId,jdbcType=INTEGER},
+      created_time = #{createdTime,jdbcType=BIGINT},
+      updated_id = #{updatedId,jdbcType=INTEGER},
+      updated_time = #{updatedTime,jdbcType=BIGINT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -16,7 +16,7 @@ public class PageController {
 
     @GetMapping("/")
     public String index() {
-        return "/page/main";
+        return "/page/main.html";
     }
 
 }

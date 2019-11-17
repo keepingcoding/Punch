@@ -1,4 +1,4 @@
-package com.example.punch.model;
+package com.example.punch.model.dto;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -25,5 +25,8 @@ public class PunchNotesDTO implements Serializable {
 
     /** 备注 **/
     private String remark;
+
+    /** 打卡类型: 0 上班 1 下班 **/
+    private Byte punchType;
 
 }

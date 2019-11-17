@@ -1,17 +1,22 @@
-package com.example.punch.model;
+package com.example.punch.model.bo;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Date;
+
 /**
  * @author zzs
- * @date 2019/10/24 21:34
+ * @date 2019/11/17 23:40
  */
-@Setter
 @Getter
+@Setter
 @ToString
-public class PunchNotes {
+public class PunchRecordBO {
+
+    /**  **/
+    private Date punchDay;
 
     /** 打卡时间 **/
     private String time;
@@ -21,4 +26,7 @@ public class PunchNotes {
 
     /** 备注 **/
     private String remark;
+
+    /** 打卡类型: 0 上班 1 下班 **/
+    private Byte punchType;
 }

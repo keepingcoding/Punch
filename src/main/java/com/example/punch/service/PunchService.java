@@ -1,7 +1,7 @@
 package com.example.punch.service;
 
-import com.example.punch.model.PunchNotes;
-import com.example.punch.model.PunchNotesDTO;
+import com.example.punch.model.PunchRecord;
+import com.example.punch.model.bo.PunchRecordBO;
 
 import java.util.List;
 
@@ -12,8 +12,11 @@ import java.util.List;
 public interface PunchService {
 
     /** 打卡 **/
-    void doPunch(PunchNotes punchNotes) throws Exception;
+    void doPunch(PunchRecordBO punchRecordBO) throws Exception;
+
+    /** 获取打卡类型 **/
+    Byte getPunchType(String date);
 
     /** 查询list **/
-    List<PunchNotesDTO> queryAll(String time) throws Exception;
+    List<PunchRecord> queryAll(String time) throws Exception;
 }

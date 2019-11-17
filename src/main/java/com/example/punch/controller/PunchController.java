@@ -1,12 +1,14 @@
 package com.example.punch.controller;
 
+import com.alibaba.fastjson.TypeReference;
 import com.example.punch.contract.BaseResponse;
-import com.example.punch.contract.exception.ServiceException;
-import com.example.punch.model.PunchNotes;
-import com.example.punch.model.PunchNotesDTO;
+import com.example.punch.contract.ServiceStatus;
+import com.example.punch.model.PunchRecord;
+import com.example.punch.model.bo.PunchRecordBO;
+import com.example.punch.model.dto.PunchNotesDTO;
 import com.example.punch.service.PunchService;
 import com.example.punch.util.BeanConverter;
-import com.example.punch.util.ValidationUtil;
+import com.example.punch.util.ValidationUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -31,6 +33,26 @@ public class PunchController {
     private PunchService punchService;
 
     /**
+     * 获取打卡类型
+     *
+     * @param queryDate
+     */
+    @PostMapping("/getPunchType")
+    public BaseResponse<Byte> getPunchType(@RequestBody String queryDate) {
+        long beginTime = System.currentTimeMillis();
+        BaseResponse<Byte> baseResponse = new BaseResponse();
+        try {
+            Byte punchType = this.punchService.getPunchType(queryDate);
+            baseResponse.setResult(punchType).calcCostTime(beginTime);
+        } catch (Exception e) {
+            log.error("获取打卡类型出现异常", e);
+            baseResponse.setSuccess(false).setResultCode(ServiceStatus.GENERAL_ERROR.getCode())
+                    .setResultMsg(e.getMessage()).calcCostTime(beginTime);
+        }
+        return baseResponse;
+    }
+
+    /**
      * 打卡
      *
      * @param punchNotesDTO
@@ -38,24 +60,22 @@ public class PunchController {
     @PostMapping("/record")
     public BaseResponse doPunch(@RequestBody PunchNotesDTO punchNotesDTO) {
         long beginTime = System.currentTimeMillis();
-        Map<String, List<String>> validator = ValidationUtil.validator(punchNotesDTO);
+        Map<String, List<String>> validator = ValidationUtils.validator(punchNotesDTO);
         if (validator != null) {
             BaseResponse baseResponse = new BaseResponse(validator);
             baseResponse.calcCostTime(beginTime);
             return baseResponse;
         }
-        BaseResponse baseResponse = new BaseResponse();
+        BaseResponse baseResponse= new BaseResponse();
         try {
-            PunchNotes punchNotes = BeanConverter.convert(punchNotesDTO, PunchNotes.class);
-            this.punchService.doPunch(punchNotes);
+            PunchRecordBO punchRecordBO = BeanConverter.convert(punchNotesDTO, PunchRecordBO.class);
+            this.punchService.doPunch(punchRecordBO);
 
             baseResponse.setResult("success").calcCostTime(beginTime);
         } catch (Exception e) {
             log.error("打卡出现异常", e);
-            baseResponse.setStatusCode("200")
-                    .setResultCode(ServiceException.GENERAL_ERROR)
-                    .setResultMsg(e.getMessage())
-                    .calcCostTime(beginTime);
+            baseResponse.setSuccess(false).setResultCode(ServiceStatus.GENERAL_ERROR.getCode())
+                    .setResultMsg(e.getMessage()).calcCostTime(beginTime);
         }
         return baseResponse;
     }
@@ -65,14 +85,13 @@ public class PunchController {
         long beginTime = System.currentTimeMillis();
         BaseResponse baseResponse = new BaseResponse();
         try {
-            List<PunchNotesDTO> list = this.punchService.queryAll(time);
-            baseResponse.setResult(list).calcCostTime(beginTime);
+            List<PunchRecord> list = this.punchService.queryAll(time);
+            List<PunchNotesDTO> res = BeanConverter.convert(list, new TypeReference<List<PunchNotesDTO>>() {});
+            baseResponse.setResult(res).calcCostTime(beginTime);
         } catch (Exception e) {
             log.error("查询list出现异常", e);
-            baseResponse.setStatusCode("200")
-                    .setResultCode(ServiceException.GENERAL_ERROR)
-                    .setResultMsg(e.getMessage())
-                    .calcCostTime(beginTime);
+            baseResponse.setSuccess(false).setResultCode(ServiceStatus.GENERAL_ERROR.getCode())
+                    .setResultMsg(e.getMessage()).calcCostTime(beginTime);
         }
         return baseResponse;
     }

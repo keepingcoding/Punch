@@ -53,4 +53,26 @@ public class CommonConstant {
             return null;
         }
     }
+
+    /** 打卡种类 **/
+    public enum PunchType {
+        ON_WORK((byte)0, "上班"),
+        OFF_WORK((byte)1, "下班");
+
+        private byte code;
+        private String name;
+
+        PunchType(byte code, String name) {
+            this.code = code;
+            this.name = name;
+        }
+
+        public byte getCode() {
+            return code;
+        }
+
+        public String getName() {
+            return name;
+        }
+    }
 }

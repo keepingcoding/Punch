@@ -11,9 +11,9 @@
     <div>
         <span>{{ nowTime }}</span>
         <hr/>
-        <button @click="doPunch">打卡</button>
+        <button @click="doPunch">{{ punchTypeStr }}</button>
     </div>
-
+    <hr/>
     <div>
         <button @click="queryRecords">查看打卡记录</button>
 

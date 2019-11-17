@@ -1,5 +1,6 @@
 package com.example.punch;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.PropertySource;
@@ -10,6 +11,7 @@ import org.springframework.context.annotation.PropertySource;
  */
 @SpringBootApplication
 @PropertySource(value = {"classpath:config.properties"}, ignoreResourceNotFound = true)
+@MapperScan(basePackages = "com.example.punch.dao")
 public class PunchApplication {
 
     public static void main(String[] args) {

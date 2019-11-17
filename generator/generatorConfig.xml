@@ -8,7 +8,7 @@
 		resource：配置资源加载地址，使用resource，MBG从classpath开始找，比如com/myproject/generatorConfig.properties        
 		url：配置资源加载地质，使用URL的方式，比如file:///C:/myfolder/generatorConfig.properties.	
 	-->
-	<properties url="file:///E:/Workspaces/GitHub/punch/generator/config.properties" />
+	<properties url="file:///D:/Workspaces/GitHub/punch/generator/config.properties" />
 	
     <!-- classPathEntry:数据库的JDBC驱动,换成你自己的驱动位置 -->
     <classPathEntry location="${driverPath}"/>

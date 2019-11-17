@@ -1,17 +1,16 @@
-package com.example.punch.model;
+package com.example.punch.model.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
-/**
- * @author zzs
- * @date 2019/10/27 18:50
- */
+
 @Setter
 @Getter
+@ToString
 public class UserDTO implements Serializable {
 
     @NotNull
