@@ -29,7 +29,7 @@ var app = new Vue({
             });
         },
         doPunch: function () {
-            $('#timeinput').trigger("click");
+            $('#jeTimeInput').trigger("click");
         },
         formatDate: function () {
             var _this = this;
@@ -51,7 +51,10 @@ var app = new Vue({
             axios({
                 method: 'POST',
                 url: '/queryByDate',
-                data: ''
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                data: $('#jeQueryMonth').val()
             }).then(function (res) {
                 _this.items = res.data.result;
             }).catch(function (err) {
@@ -78,20 +81,33 @@ var app = new Vue({
         }, 1000);
 
         // 日期控件
-        jeDate("#timeinput", {
-            format: "YYYY-MM-DD hh:mm:ss",
+        jeDate("#jeTimeInput", {
+            format: "hh:mm:ss",
             donefun: function(obj){
-                var d = {'time': obj.val, 'punchType': _this.punchType};
+                var inputDate = jeDate.nowDate(0, "YYYY-MM-DD");
+                var time = inputDate + ' ' + obj.val;
+                var d = {'time': time, 'punchType': _this.punchType};
                 axios({
                     method: 'POST',
                     url: '/record',
                     data: d
                 }).then(function (res) {
-                    console.log(res.data);
+                    if (res.data.success) {
+                        alert(_this.punchTypeStr + "打卡成功");
+                    } else {
+                        alert(_this.punchTypeStr + "打卡失败/n" + res.data.resultMsg);
+                    }
                 }).catch(function (err) {
                     console.log(err);
                 });
             }
+        });
+
+        jeDate("#jeQueryMonth", {
+            format: "YYYY-MM",
+            maxDate: jeDate.nowDate(0, "YYYY-MM"),
+            onClose: true,
+            isinitVal: true
         });
     },
     beforeDestory: function () {

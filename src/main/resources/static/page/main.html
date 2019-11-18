@@ -17,14 +17,17 @@
         <span>{{ nowTime }}</span>
         <hr/>
         <div>
-            <input type="text" class="jeinput" id="timeinput" style="display: none;">
+            <input type="text" class="jeinput" id="jeTimeInput" style="display: none;">
+            <button @click="doPunch">{{ punchTypeStr }}</button>
         </div>
 
-        <button @click="doPunch">{{ punchTypeStr }}</button>
     </div>
     <hr/>
     <div>
-        <button @click="queryRecords">查看打卡记录</button>
+        <div>
+            <input type="text" class="jeinput" id="jeQueryMonth">
+            <button @click="queryRecords">查看打卡记录</button>
+        </div>
 
         <table style="border-style: solid none solid none;">
             <thead>
