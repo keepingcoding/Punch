@@ -16,6 +16,8 @@
     <div>
         <span>{{ nowTime }}</span>
         <hr/>
+        <span v-html="punchShow"></span>
+        <br/><br/>
         <div>
             <input type="text" class="jeinput" id="jeTimeInput" style="display: none;">
             <button @click="doPunch">{{ punchTypeStr }}</button>
@@ -28,25 +30,27 @@
             <input type="text" class="jeinput" id="jeQueryMonth">
             <button @click="queryRecords">查看打卡记录</button>
         </div>
-
-        <table style="border-style: solid none solid none;">
-            <thead>
-            <tr style="text-align: center;">
-                <th style="width: 35px;">序号</th>
-                <th style="width: 180px;">日期</th>
-                <th style="width: 180px;">上班时间</th>
-                <th style="width: 180px;">下班时间</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-for="(b,index) in items">
-                <td v-text="index+1" style="text-align: center;"></td>
-                <td v-text="b.punchDay" style="text-align: center;"></td>
-                <td v-text="b.punchOnTime" style="text-align: center;"></td>
-                <td v-text="b.punchOffTime" style="text-align: center;"></td>
-            </tr>
-            </tbody>
-        </table>
+        <br/>
+        <div id="tbRecordData" style="display: none;">
+            <table style="border-style: solid none solid none;">
+                <thead>
+                <tr style="text-align: center;">
+                    <th style="width: 35px;">序号</th>
+                    <th style="width: 180px;">日期</th>
+                    <th style="width: 180px;">上班时间</th>
+                    <th style="width: 180px;">下班时间</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="(b,index) in items">
+                    <td v-text="index+1" style="text-align: center;"></td>
+                    <td v-text="b.punchDay" style="text-align: center;"></td>
+                    <td v-text="b.punchOnTime" style="text-align: center;"></td>
+                    <td v-text="b.punchOffTime" style="text-align: center;"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
 

@@ -7,7 +7,8 @@ var app = new Vue({
         nowTime: '',
         punchType: null,
         punchTypeStr: '打卡',
-        items: []
+        items: [],
+        punchShow: ''
     },
     methods: {
         getPunchType: function () {
@@ -21,8 +22,18 @@ var app = new Vue({
                 data: _this.nowTime
             }).then(function (res) {
                 if (res.data.success && res.data.resultCode == 200) {
-                    _this.punchType = res.data.result;
+                    _this.punchType = res.data.result.type;
                     _this.punchTypeStr = _this.punchType == 0 ? '上班' : '下班';
+                    if (res.data.result.data) {
+                        var onWorkTimeShow = res.data.result.data.punchOnTime;
+                        var offWorkTimeShow = res.data.result.data.punchOffTime;
+                        if (_this.punchType != 0) {
+                            _this.punchShow = "上班时间: " + onWorkTimeShow;
+                            if (offWorkTimeShow) {
+                                _this.punchShow = _this.punchShow + "<br>下班时间: " + offWorkTimeShow;
+                            }
+                        }
+                    }
                 }
             }).catch(function (err) {
                 console.log(err);
@@ -57,6 +68,7 @@ var app = new Vue({
                 data: $('#jeQueryMonth').val()
             }).then(function (res) {
                 _this.items = res.data.result;
+                $('#tbRecordData').show();
             }).catch(function (err) {
                 console.log(err);
             });
@@ -95,7 +107,7 @@ var app = new Vue({
                     if (res.data.success) {
                         alert(_this.punchTypeStr + "打卡成功");
                     } else {
-                        alert(_this.punchTypeStr + "打卡失败/n" + res.data.resultMsg);
+                        alert(_this.punchTypeStr + "打卡失败<br/>" + res.data.resultMsg);
                     }
                 }).catch(function (err) {
                     console.log(err);

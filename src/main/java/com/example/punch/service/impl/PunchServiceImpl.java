@@ -15,6 +15,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import static com.example.punch.contract.CommonConstant.StorageType;
 
@@ -80,8 +81,8 @@ public class PunchServiceImpl implements PunchService {
     }
 
     @Override
-    public Byte getPunchType(String date) {
-        Byte res = null;
+    public Map<String,Object> getPunchType(String date) {
+        Map<String,Object> res = null;
         String storageType = getStorageType();
         switch (storageType) {
             case "0":

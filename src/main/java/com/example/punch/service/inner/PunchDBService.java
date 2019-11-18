@@ -14,7 +14,7 @@ import java.util.Map;
 public interface PunchDBService {
 
     /** 获取打卡类型，上班还是下班 **/
-    Byte getPunchType(String date);
+    Map<String,Object> getPunchType(String date);
 
     /** 执行打卡 **/
     void writeToDb(PunchRecord punchRecord, Byte punchType) throws Exception;

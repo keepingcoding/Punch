@@ -4,6 +4,7 @@ import com.example.punch.model.PunchRecord;
 import com.example.punch.contract.bo.PunchRecordBO;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author zzs
@@ -15,7 +16,7 @@ public interface PunchService {
     void doPunch(PunchRecordBO punchRecordBO) throws Exception;
 
     /** 获取打卡类型 **/
-    Byte getPunchType(String date);
+    Map<String,Object> getPunchType(String date);
 
     /** 查询list **/
     List<PunchRecord> queryAll(String time) throws Exception;

@@ -1,13 +1,15 @@
 package com.example.punch.service.inner.impl;
 
+import com.example.punch.contract.vo.PunchRecordVO;
 import com.example.punch.dao.ext.PunchRecordExtMapper;
 import com.example.punch.model.PunchRecord;
 import com.example.punch.service.inner.PunchDBService;
+import com.example.punch.util.BeanConverter;
 import com.example.punch.util.DateUtils;
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,6 +17,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static com.example.punch.contract.CommonConstant.PunchType;
@@ -32,7 +35,7 @@ public class PunchDBServiceImpl implements PunchDBService {
 
     /** 获取打卡类型 **/
     @Override
-    public Byte getPunchType(String date) {
+    public Map<String,Object> getPunchType(String date) {
         /*
             有上班卡才有下班卡
             1.第一次打卡是上班卡，第二次打下班卡，后面的每次都是更新下班卡，直到第二天6点钟
@@ -50,12 +53,17 @@ public class PunchDBServiceImpl implements PunchDBService {
                 一个用于查询要打上班卡还是下班卡
                 一个用于记录打卡
          */
+        Map<String,Object> resultMap = Maps.newHashMapWithExpectedSize(4);
+
         // 0.判断今天有没有上班打卡
         LocalDate curDate = LocalDate.now();
         Date today = Date.from(curDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
         PunchRecord todayPunchRecord = this.punchRecordExtMapper.getWorkRecordByDate(today);
         if (Objects.nonNull(todayPunchRecord)) {
-            return PunchType.OFF_WORK.getCode();
+            PunchRecordVO convert = BeanConverter.convert(todayPunchRecord, PunchRecordVO.class);
+            resultMap.put("data", convert);
+            resultMap.put("type", PunchType.OFF_WORK.getCode());
+            return resultMap;
         }
 
         // 获取上班时间
@@ -65,7 +73,9 @@ public class PunchDBServiceImpl implements PunchDBService {
         // 1.以6点做分界线
         long queryDate = DateUtils.parseDateTime(date, "yyyy-MM-dd HH:mm:ss").getTime();
         if (queryDate > workStartTime) {
-            return PunchType.ON_WORK.getCode();
+            resultMap.put("data", null);
+            resultMap.put("type", PunchType.ON_WORK.getCode());
+            return resultMap;
         }
 
         // 2.查询昨天有没有上班记录
@@ -73,11 +83,16 @@ public class PunchDBServiceImpl implements PunchDBService {
         PunchRecord onWorkRecord = this.punchRecordExtMapper.getWorkRecordByDate(yesterday);
         // 3.没有上班记录则是上班卡
         if (Objects.isNull(onWorkRecord)) {
-            return PunchType.ON_WORK.getCode();
+            resultMap.put("data", null);
+            resultMap.put("type", PunchType.ON_WORK.getCode());
+            return resultMap;
         }
 
         // 4.否则便是下班卡
-        return PunchType.OFF_WORK.getCode();
+        PunchRecordVO convert = BeanConverter.convert(onWorkRecord, PunchRecordVO.class);
+        resultMap.put("data", convert);
+        resultMap.put("type", PunchType.OFF_WORK.getCode());
+        return resultMap;
     }
 
     /**

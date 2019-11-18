@@ -39,11 +39,11 @@ public class PunchController {
      * @param queryDate
      */
     @PostMapping("/getPunchType")
-    public BaseResponse<Byte> getPunchType(@RequestBody String queryDate) {
+    public BaseResponse<Map<String,Object>> getPunchType(@RequestBody String queryDate) {
         long beginTime = System.currentTimeMillis();
-        BaseResponse<Byte> baseResponse = new BaseResponse();
+        BaseResponse<Map<String,Object>> baseResponse = new BaseResponse();
         try {
-            Byte punchType = this.punchService.getPunchType(queryDate);
+            Map<String, Object> punchType = this.punchService.getPunchType(queryDate);
             baseResponse.setResult(punchType).calcCostTime(beginTime);
         } catch (Exception e) {
             log.error("获取打卡类型出现异常", e);
