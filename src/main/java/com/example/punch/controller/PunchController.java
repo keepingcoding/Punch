@@ -3,9 +3,10 @@ package com.example.punch.controller;
 import com.alibaba.fastjson.TypeReference;
 import com.example.punch.contract.BaseResponse;
 import com.example.punch.contract.ServiceStatus;
+import com.example.punch.contract.bo.PunchRecordBO;
+import com.example.punch.contract.dto.PunchNotesDTO;
+import com.example.punch.contract.vo.PunchRecordVO;
 import com.example.punch.model.PunchRecord;
-import com.example.punch.model.bo.PunchRecordBO;
-import com.example.punch.model.dto.PunchNotesDTO;
 import com.example.punch.service.PunchService;
 import com.example.punch.util.BeanConverter;
 import com.example.punch.util.ValidationUtils;
@@ -81,12 +82,12 @@ public class PunchController {
     }
 
     @PostMapping("/queryByDate")
-    public BaseResponse<List<PunchNotesDTO>> queryByDate(@RequestBody(required = false) String time) {
+    public BaseResponse<List<PunchRecordVO>> queryByDate(@RequestBody(required = false) String time) {
         long beginTime = System.currentTimeMillis();
-        BaseResponse baseResponse = new BaseResponse();
+        BaseResponse<List<PunchRecordVO>> baseResponse = new BaseResponse<>();
         try {
             List<PunchRecord> list = this.punchService.queryAll(time);
-            List<PunchNotesDTO> res = BeanConverter.convert(list, new TypeReference<List<PunchNotesDTO>>() {});
+            List<PunchRecordVO> res = BeanConverter.convert(list, new TypeReference<List<PunchRecordVO>>() {});
             baseResponse.setResult(res).calcCostTime(beginTime);
         } catch (Exception e) {
             log.error("查询list出现异常", e);

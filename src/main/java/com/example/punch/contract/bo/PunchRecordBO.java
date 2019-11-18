@@ -1,4 +1,4 @@
-package com.example.punch.model.bo;
+package com.example.punch.contract.bo;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -15,11 +15,11 @@ import java.util.Date;
 @ToString
 public class PunchRecordBO {
 
-    /**  **/
+    /** 日期 **/
     private Date punchDay;
 
     /** 打卡时间 **/
-    private String time;
+    private Date time;
 
     /** 打卡地点 **/
     private String location;

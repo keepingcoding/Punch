@@ -1,7 +1,7 @@
 package com.example.punch.service;
 
 import com.example.punch.model.PunchRecord;
-import com.example.punch.model.bo.PunchRecordBO;
+import com.example.punch.contract.bo.PunchRecordBO;
 
 import java.util.List;
 

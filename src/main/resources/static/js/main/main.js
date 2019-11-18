@@ -29,16 +29,7 @@ var app = new Vue({
             });
         },
         doPunch: function () {
-            var d = {'time': app.nowTime, 'punchType': app.punchType};
-            axios({
-                method: 'POST',
-                url: '/record',
-                data: d
-            }).then(function (res) {
-                console.log(res.data);
-            }).catch(function (err) {
-                console.log(err);
-            });
+            $('#timeinput').trigger("click");
         },
         formatDate: function () {
             var _this = this;
@@ -85,6 +76,23 @@ var app = new Vue({
                 _this.getPunchType();
             }
         }, 1000);
+
+        // 日期控件
+        jeDate("#timeinput", {
+            format: "YYYY-MM-DD hh:mm:ss",
+            donefun: function(obj){
+                var d = {'time': obj.val, 'punchType': _this.punchType};
+                axios({
+                    method: 'POST',
+                    url: '/record',
+                    data: d
+                }).then(function (res) {
+                    console.log(res.data);
+                }).catch(function (err) {
+                    console.log(err);
+                });
+            }
+        });
     },
     beforeDestory: function () {
         if (this.timer1) {

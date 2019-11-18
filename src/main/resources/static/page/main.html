@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link type="text/css" rel="stylesheet" href="/jedate/skin/jedate.css">
+    <script type="text/javascript" src="/js/public/jquery-3.4.1.min.js"></script>
+    <script type="text/javascript" src="/js/public/vue.min.js"></script>
+    <script type="text/javascript" src="/js/public/axios.min.js"></script>
+    <script type="text/javascript" src="/jedate/dist/jedate.min.js"></script>
 </head>
 <body>
 
@@ -11,6 +16,10 @@
     <div>
         <span>{{ nowTime }}</span>
         <hr/>
+        <div>
+            <input type="text" class="jeinput" id="timeinput" style="display: none;">
+        </div>
+
         <button @click="doPunch">{{ punchTypeStr }}</button>
     </div>
     <hr/>
@@ -21,17 +30,17 @@
             <thead>
             <tr style="text-align: center;">
                 <th style="width: 35px;">序号</th>
-                <th style="width: 180px;">打卡时间</th>
-                <th style="width: 200px;">打卡地点</th>
-                <th style="width: 200px;">备注</th>
+                <th style="width: 180px;">日期</th>
+                <th style="width: 180px;">上班时间</th>
+                <th style="width: 180px;">下班时间</th>
             </tr>
             </thead>
             <tbody>
             <tr v-for="(b,index) in items">
                 <td v-text="index+1" style="text-align: center;"></td>
-                <td v-text="b.time" style="text-align: center;"></td>
-                <td v-text="b.location"></td>
-                <td v-text="b.remarks"></td>
+                <td v-text="b.punchDay" style="text-align: center;"></td>
+                <td v-text="b.punchOnTime" style="text-align: center;"></td>
+                <td v-text="b.punchOffTime" style="text-align: center;"></td>
             </tr>
             </tbody>
         </table>
@@ -40,9 +49,6 @@
 
 </div>
 
-<script src="/js/public/vue.min.js"></script>
-<script src="/js/public/axios.min.js"></script>
 <script src="/js/main/main.js"></script>
-
 </body>
 </html>

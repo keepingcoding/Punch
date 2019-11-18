@@ -1,7 +1,7 @@
 package com.example.punch.service.inner;
 
 import com.example.punch.model.PunchRecord;
-import com.example.punch.model.bo.PunchRecordBO;
+import com.example.punch.contract.bo.PunchRecordBO;
 
 import java.io.IOException;
 import java.util.List;

@@ -1,7 +1,7 @@
 package com.example.punch.service.impl;
 
 import com.example.punch.model.PunchRecord;
-import com.example.punch.model.bo.PunchRecordBO;
+import com.example.punch.contract.bo.PunchRecordBO;
 import com.example.punch.service.PunchService;
 import com.example.punch.service.inner.PunchDBService;
 import com.example.punch.service.inner.PunchFileService;
@@ -59,15 +59,12 @@ public class PunchServiceImpl implements PunchService {
     /** 写入数据库 **/
     private void doPunchToDb(PunchRecordBO punchRecordBO) throws Exception {
         PunchRecord punchRecord = new PunchRecord();
-        punchRecord.setPunchDay(punchRecordBO.getPunchDay());
 
-        String time = punchRecordBO.getTime();
-        Date punchTime = DateUtils.parseDateTime(time, "yyyy-MM-dd HH:mm:ss");
-
-
+        Date punchTime = punchRecordBO.getTime();
         Byte punchType = punchRecordBO.getPunchType();
         switch (punchType) {
             case 0:
+                punchRecord.setPunchDay(punchTime);
                 punchRecord.setPunchOnTime(punchTime);
                 punchRecord.setPunchOnAddr(punchRecordBO.getLocation());
                 punchRecord.setOnRemark(punchRecordBO.getRemark());

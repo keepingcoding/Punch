@@ -1,11 +1,14 @@
-package com.example.punch.model.dto;
+package com.example.punch.contract.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * @author zzs
@@ -18,7 +21,8 @@ public class PunchNotesDTO implements Serializable {
 
     /** 打卡时间 **/
     @NotNull
-    private String time;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date time;
 
     /** 打卡地点 **/
     private String location;

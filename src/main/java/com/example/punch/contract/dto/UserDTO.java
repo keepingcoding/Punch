@@ -1,4 +1,4 @@
-package com.example.punch.model.dto;
+package com.example.punch.contract.dto;
 
 import lombok.Getter;
 import lombok.Setter;

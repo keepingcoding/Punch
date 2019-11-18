@@ -1,4 +1,4 @@
-package com.example.punch.model.vo;
+package com.example.punch.contract.vo;
 
 import lombok.Getter;
 import lombok.Setter;

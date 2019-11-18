@@ -2,7 +2,7 @@ package com.example.punch.service.inner.impl;
 
 import com.example.punch.contract.Tuple;
 import com.example.punch.model.PunchRecord;
-import com.example.punch.model.bo.PunchRecordBO;
+import com.example.punch.contract.bo.PunchRecordBO;
 import com.example.punch.service.inner.PunchFileService;
 import com.example.punch.util.DateUtils;
 import com.example.punch.util.FileUtils;
@@ -65,7 +65,8 @@ public class PunchFileServiceImpl implements PunchFileService {
             long lastIndex = tuple.getIndex();
             List<String> list = Splitter.on(fileSeparator).trimResults().splitToList(lastLine);
             //todo 目前逻辑是一天只能打一次卡
-            String oldStr = punchRecordBO.getTime().substring(0, 10);
+            Date time = punchRecordBO.getTime();
+            String oldStr = DateUtils.formatDate(time,"yyyy-MM-dd");
             if (list.get(0).contains(oldStr)) {
                 //更新
                 log.info(">>> The write mode is [update].");
