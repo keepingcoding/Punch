@@ -2,6 +2,9 @@ var app = new Vue({
     el: '#mainApp',
     data: {
         message: 'Hello Vue!',
+        dic: {
+            punchStatus: [{code: 0, name: '迟到'}, {code: 1, name: '早退'}, {code: 2, name: '加班'}]
+        },
         timer1: null,
         timer2: null,
         nowTime: '',

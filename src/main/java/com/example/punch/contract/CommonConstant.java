@@ -75,4 +75,41 @@ public class CommonConstant {
             return name;
         }
     }
+
+    /** 打卡状态 **/
+    public enum PunchStatusEnum {
+        STATUS_BE_LATE((byte)0, "迟到"),
+        STATUS_LEAVE_EARLY((byte)1, "早退"),
+        STATUS_OVERTIME((byte)2, "加班"),
+        ;
+
+        private byte code;
+        private String name;
+
+        PunchStatusEnum(byte code, String name) {
+            this.code = code;
+            this.name = name;
+        }
+
+        public byte getCode() {
+            return code;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public static String getByCode(Byte code) {
+            if (code == null) {
+                return null;
+            }
+            PunchStatusEnum[] values = PunchStatusEnum.values();
+            for (PunchStatusEnum value : values) {
+                if (value.getCode() == code) {
+                    return value.getName();
+                }
+            }
+            return null;
+        }
+    }
 }

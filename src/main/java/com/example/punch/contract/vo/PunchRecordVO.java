@@ -1,5 +1,6 @@
 package com.example.punch.contract.vo;
 
+import com.example.punch.contract.CommonConstant;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,4 +40,5 @@ public class PunchRecordVO implements Serializable {
     private String onRemark;
 
     private String offRemark;
+
 }
