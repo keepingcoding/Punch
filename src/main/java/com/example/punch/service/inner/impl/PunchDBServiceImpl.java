@@ -3,6 +3,7 @@ package com.example.punch.service.inner.impl;
 import com.example.punch.contract.vo.PunchRecordVO;
 import com.example.punch.dao.ext.PunchRecordExtMapper;
 import com.example.punch.model.PunchRecord;
+import com.example.punch.model.PunchRecordExp;
 import com.example.punch.service.inner.PunchDBService;
 import com.example.punch.util.BeanConverter;
 import com.example.punch.util.DateUtils;
@@ -152,7 +153,8 @@ public class PunchDBServiceImpl implements PunchDBService {
 
     /** 从数据库读取 **/
     @Override
-    public List<PunchRecord> readFromDb(String time) {
+    public List<PunchRecordExp> readFromDb(String time) {
+        time = time + "-01";
         return this.punchRecordExtMapper.queryRecordByMonth(time);
     }
 }

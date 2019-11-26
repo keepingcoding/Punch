@@ -6,19 +6,21 @@ import com.example.punch.contract.ServiceStatus;
 import com.example.punch.contract.bo.PunchRecordBO;
 import com.example.punch.contract.dto.PunchNotesDTO;
 import com.example.punch.contract.vo.PunchRecordVO;
-import com.example.punch.model.PunchRecord;
+import com.example.punch.model.PunchRecordExp;
 import com.example.punch.service.PunchService;
 import com.example.punch.util.BeanConverter;
 import com.example.punch.util.ValidationUtils;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +29,7 @@ import java.util.Map;
  * @date 2019/10/24 21:15
  */
 @Slf4j
+@Validated
 @RestController
 public class PunchController {
 
@@ -39,9 +42,9 @@ public class PunchController {
      * @param queryDate
      */
     @PostMapping("/getPunchType")
-    public BaseResponse<Map<String,Object>> getPunchType(@RequestBody String queryDate) {
+    public BaseResponse<Map<String, Object>> getPunchType(@RequestBody String queryDate) {
         long beginTime = System.currentTimeMillis();
-        BaseResponse<Map<String,Object>> baseResponse = new BaseResponse();
+        BaseResponse<Map<String, Object>> baseResponse = new BaseResponse();
         try {
             Map<String, Object> punchType = this.punchService.getPunchType(queryDate);
             baseResponse.setResult(punchType).calcCostTime(beginTime);
@@ -67,7 +70,7 @@ public class PunchController {
             baseResponse.calcCostTime(beginTime);
             return baseResponse;
         }
-        BaseResponse baseResponse= new BaseResponse();
+        BaseResponse baseResponse = new BaseResponse();
         try {
             PunchRecordBO punchRecordBO = BeanConverter.convert(punchNotesDTO, PunchRecordBO.class);
             this.punchService.doPunch(punchRecordBO);
@@ -82,11 +85,30 @@ public class PunchController {
     }
 
     @PostMapping("/queryByDate")
-    public BaseResponse<List<PunchRecordVO>> queryByDate(@RequestBody(required = false) String time) {
+    public BaseResponse<List<PunchRecordVO>> queryByDate(
+            @RequestBody(required = false) @Valid @Pattern(regexp = "^[0-9]{4}-(0[1-9]|1[0-2])$") String time,
+            BindingResult bindingResult) {
         long beginTime = System.currentTimeMillis();
+        if (bindingResult.hasErrors()) {
+            Map<String, List<String>> validationErrors = Maps.newHashMapWithExpectedSize(3);
+            List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+            for (FieldError fieldError : fieldErrors) {
+                String field = fieldError.getField();
+                List<String> lst = validationErrors.get(field);
+                if (lst == null) {
+                    lst = Lists.newArrayList();
+                }
+                lst.add(fieldError.getDefaultMessage());
+                validationErrors.put(field, lst);
+            }
+            BaseResponse baseResponse = new BaseResponse(validationErrors);
+            baseResponse.calcCostTime(beginTime);
+            return baseResponse;
+        }
+
         BaseResponse<List<PunchRecordVO>> baseResponse = new BaseResponse<>();
         try {
-            List<PunchRecord> list = this.punchService.queryAll(time);
+            List<PunchRecordExp> list = this.punchService.queryAll(time);
             List<PunchRecordVO> res = BeanConverter.convert(list, new TypeReference<List<PunchRecordVO>>() {});
             baseResponse.setResult(res).calcCostTime(beginTime);
         } catch (Exception e) {
@@ -108,4 +130,6 @@ public class PunchController {
         }
 
     }
+
 }
+

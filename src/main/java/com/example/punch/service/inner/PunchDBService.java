@@ -1,6 +1,7 @@
 package com.example.punch.service.inner;
 
 import com.example.punch.model.PunchRecord;
+import com.example.punch.model.PunchRecordExp;
 
 import java.util.List;
 import java.util.Map;
@@ -20,5 +21,5 @@ public interface PunchDBService {
     void writeToDb(PunchRecord punchRecord, Byte punchType) throws Exception;
 
     /** 读取打卡记录 **/
-    List<PunchRecord> readFromDb(String time);
+    List<PunchRecordExp> readFromDb(String time);
 }

@@ -2,6 +2,7 @@ package com.example.punch.service;
 
 import com.example.punch.model.PunchRecord;
 import com.example.punch.contract.bo.PunchRecordBO;
+import com.example.punch.model.PunchRecordExp;
 
 import java.util.List;
 import java.util.Map;
@@ -19,5 +20,5 @@ public interface PunchService {
     Map<String,Object> getPunchType(String date);
 
     /** 查询list **/
-    List<PunchRecord> queryAll(String time) throws Exception;
+    List<PunchRecordExp> queryAll(String time) throws Exception;
 }

@@ -3,6 +3,7 @@ package com.example.punch.service.inner.impl;
 import com.example.punch.contract.Tuple;
 import com.example.punch.model.PunchRecord;
 import com.example.punch.contract.bo.PunchRecordBO;
+import com.example.punch.model.PunchRecordExp;
 import com.example.punch.service.inner.PunchFileService;
 import com.example.punch.util.DateUtils;
 import com.example.punch.util.FileUtils;
@@ -87,7 +88,7 @@ public class PunchFileServiceImpl implements PunchFileService {
 
     /** 从文件读取 **/
     @Override
-    public List<PunchRecord> readFromFile(String fileName) throws Exception {
+    public List<PunchRecordExp> readFromFile(String fileName) throws Exception {
         log.info(">>> Start to read from file.");
         File file = getFile(fileName);
         if (!file.exists()) {
@@ -97,13 +98,13 @@ public class PunchFileServiceImpl implements PunchFileService {
         String fileSeparator = env.getProperty("punch.file.separator");
 
         return Files.asCharSource(file, Charset.forName("UTF-8"))
-                .readLines(new LineProcessor<List<PunchRecord>>() {
-                    final List<PunchRecord> result = Lists.newArrayList();
+                .readLines(new LineProcessor<List<PunchRecordExp>>() {
+                    final List<PunchRecordExp> result = Lists.newArrayList();
 
                     @Override
                     public boolean processLine(String line) {
                         List<String> list = Splitter.on(fileSeparator).trimResults().splitToList(line);
-                        PunchRecord bean = new PunchRecord();
+                        PunchRecordExp bean = new PunchRecordExp();
                         String s = list.get(0);
                         bean.setPunchOnTime(DateUtils.parseDateTime(s,"yyyy-MM-dd HH:mm:ss"));
                         bean.setPunchOnAddr(list.get(1));
@@ -113,7 +114,7 @@ public class PunchFileServiceImpl implements PunchFileService {
                     }
 
                     @Override
-                    public List<PunchRecord> getResult() {
+                    public List<PunchRecordExp> getResult() {
                         return result;
                     }
                 });

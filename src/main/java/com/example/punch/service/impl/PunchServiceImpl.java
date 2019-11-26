@@ -2,6 +2,7 @@ package com.example.punch.service.impl;
 
 import com.example.punch.model.PunchRecord;
 import com.example.punch.contract.bo.PunchRecordBO;
+import com.example.punch.model.PunchRecordExp;
 import com.example.punch.service.PunchService;
 import com.example.punch.service.inner.PunchDBService;
 import com.example.punch.service.inner.PunchFileService;
@@ -96,8 +97,8 @@ public class PunchServiceImpl implements PunchService {
     }
 
     @Override
-    public List<PunchRecord> queryAll(String time) throws Exception {
-        List<PunchRecord> res = Lists.newArrayList();
+    public List<PunchRecordExp> queryAll(String time) throws Exception {
+        List<PunchRecordExp> res = Lists.newArrayList();
 
         String queryDate;
         if (StringUtils.hasText(time)) {

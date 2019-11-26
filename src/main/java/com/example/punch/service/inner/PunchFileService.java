@@ -2,6 +2,7 @@ package com.example.punch.service.inner;
 
 import com.example.punch.model.PunchRecord;
 import com.example.punch.contract.bo.PunchRecordBO;
+import com.example.punch.model.PunchRecordExp;
 
 import java.io.IOException;
 import java.util.List;
@@ -18,5 +19,5 @@ public interface PunchFileService {
     void writeToFile(PunchRecordBO punchRecordBO) throws IOException;
 
     /** 读取打卡记录 **/
-    List<PunchRecord> readFromFile(String fileName) throws Exception;
+    List<PunchRecordExp> readFromFile(String fileName) throws Exception;
 }
