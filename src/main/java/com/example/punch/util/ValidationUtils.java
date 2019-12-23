@@ -7,6 +7,12 @@ import java.util.*;
  * 校验工具类
  */
 public class ValidationUtils {
+
+    /**
+     * @param t          要校验的数据
+     * @param skipFields 不需要校验的字段
+     * @return
+     */
     public static <T> Map<String, List<String>> validator(T t, HashSet<String> skipFields) {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();

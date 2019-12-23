@@ -58,11 +58,11 @@
                     <td v-text="b.punchOnTime" style="text-align: center;"></td>
                     <td v-text="b.punchOffTime" style="text-align: center;"></td>
                     <template v-if="b.punchStatus==null">
-                        <td v-text="" style="text-align: center;"></td>
+                        <td v-text="" style="text-align: center;" @click="editPunchType($event, '')"></td>
                     </template>
                     <template v-else>
                         <td v-text="d.name" v-for="d in dic.punchStatus" v-if="d.code==b.punchStatus"
-                            style="text-align: center; color: red;"></td>
+                            style="text-align: center; color: red;" @click="editPunchType($event, d.name)"></td>
                     </template>
                 </tr>
                 </tbody>

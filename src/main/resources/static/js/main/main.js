@@ -75,6 +75,12 @@ var app = new Vue({
             }).catch(function (err) {
                 console.log(err);
             });
+        },
+        editPunchType: function (e, t) {
+            console.log(e.target)
+            console.log(t)
+            console.log(this)
+            $(e.target).appendChild("<a href='www.baidu.com'>测试</a>")
         }
     },
     created: function () {
