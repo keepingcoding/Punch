@@ -24,10 +24,10 @@ public class PunchRecordVO implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date punchDay;
 
-    @JsonFormat(pattern = "HH:mm:ss", timezone = "GMT+8")
+    @JsonFormat(pattern = "HH:mm", timezone = "GMT+8")
     private Date punchOnTime;
 
-    @JsonFormat(pattern = "HH:mm:ss", timezone = "GMT+8")
+    @JsonFormat(pattern = "HH:mm", timezone = "GMT+8")
     private Date punchOffTime;
 
     private Byte punchStatus;

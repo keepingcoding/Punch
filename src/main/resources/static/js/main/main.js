@@ -62,13 +62,20 @@ var app = new Vue({
         },
         queryRecords: function () {
             var _this = this;
+            var queryDate = $('#jeQueryMonth').val();
+            var queryTime = $('#jeQueryTime').val();
+            var param = queryDate;
+            if (queryTime != '') {
+                param += '-01 ' + queryTime;
+            }
+
             axios({
                 method: 'POST',
                 url: '/queryByDate',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                data: $('#jeQueryMonth').val()
+                data: param,
             }).then(function (res) {
                 _this.items = res.data.result;
                 $('#tbRecordData').show();
@@ -129,6 +136,11 @@ var app = new Vue({
             maxDate: jeDate.nowDate(0, "YYYY-MM"),
             onClose: true,
             isinitVal: true
+        });
+
+        jeDate("#jeQueryTime", {
+            format: "hh:mm:ss",
+            onClose: true
         });
     },
     beforeDestory: function () {

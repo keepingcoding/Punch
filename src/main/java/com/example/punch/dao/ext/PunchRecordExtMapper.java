@@ -154,4 +154,52 @@ public interface PunchRecordExtMapper {
             "		t1.date_list ASC                                                         "
     )
     List<PunchRecordExp> queryRecordByMonth(String startMonth);
+
+    @ResultMap("ExpResultMap")
+    @Select(
+            "<script>                                          "+
+            "	SELECT                                         "+
+            "		t.date_list,                               "+
+            "		CASE                                       "+
+            "			DAYOFWEEK( t.date_list )               "+
+            "			WHEN 1 THEN                            "+
+            "			'星期日'                               "+
+            "			WHEN 2 THEN                            "+
+            "			'星期一'                               "+
+            "			WHEN 3 THEN                            "+
+            "			'星期二'                               "+
+            "			WHEN 4 THEN                            "+
+            "			'星期三'                               "+
+            "			WHEN 5 THEN                            "+
+            "			'星期四'                               "+
+            "			WHEN 6 THEN                            "+
+            "			'星期五'                               "+
+            "			WHEN 7 THEN                            "+
+            "			'星期六'                               "+
+            "		END week_name,                             "+
+            "		t.id,                                      "+
+            "		t.user_id,                                 "+
+            "		t.punch_on_time,                           "+
+            "		t.punch_off_time,                          "+
+            "		t.punch_status,                            "+
+            "		t.punch_on_addr,                           "+
+            "		t.punch_off_addr,                          "+
+            "		t.on_remark,                               "+
+            "		t.off_remark                               "+
+            "	FROM                                           "+
+            "		t_punch_record t                           "+
+            "	WHERE                                          "+
+            "		MONTH(t.punch_day) = MONTH(#{startTime})   "+
+            "		<if test='type == 0'>                      "+
+            "			t.punch_on_time &gt; #{startTime}      "+
+            "		</if>                                      "+
+            "		<if test='type == 1'>                      "+
+            "			t.punch_off_time &gt; #{startTime}     "+
+            "		</if>                                      "+
+            "	ORDER BY                                       "+
+            "		t.date_list ASC                            "+
+            "</script>                                         "
+
+    )
+    List<PunchRecordExp> queryRecordByTime(String startTime);
 }

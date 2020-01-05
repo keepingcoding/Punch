@@ -16,10 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import static com.example.punch.contract.CommonConstant.PunchType;
 
@@ -154,7 +151,13 @@ public class PunchDBServiceImpl implements PunchDBService {
     /** 从数据库读取 **/
     @Override
     public List<PunchRecordExp> readFromDb(String time) {
-        time = time + "-01";
-        return this.punchRecordExtMapper.queryRecordByMonth(time);
+        int length = time.length();
+        if (length == 7) {
+            time = time + "-01";
+            return this.punchRecordExtMapper.queryRecordByMonth(time);
+        } else if (length == 19) {
+            return this.punchRecordExtMapper.queryRecordByTime(time);
+        }
+        return Collections.emptyList();
     }
 }

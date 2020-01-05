@@ -86,7 +86,7 @@ public class PunchController {
 
     @PostMapping("/queryByDate")
     public BaseResponse<List<PunchRecordVO>> queryByDate(
-            @RequestBody(required = false) @Valid @Pattern(regexp = "^[0-9]{4}-(0[1-9]|1[0-2])$") String time,
+            @RequestBody(required = false) @Valid @Pattern(regexp = "^([0-9]{4}-(0[1-9]|1[0-2]))(|(-01 (0[1-9]|1[0-9]|2[0-4]):([0-5][0-9]):([0-5][0-9])))$") String time,
             BindingResult bindingResult) {
         long beginTime = System.currentTimeMillis();
         if (bindingResult.hasErrors()) {
@@ -118,7 +118,6 @@ public class PunchController {
         }
         return baseResponse;
     }
-
 
     @PostMapping("/record2")
     public void doPunch2(@RequestBody @Valid PunchNotesDTO punchNotesDTO, BindingResult bindingResult) {
