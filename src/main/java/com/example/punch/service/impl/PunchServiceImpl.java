@@ -1,8 +1,10 @@
 package com.example.punch.service.impl;
 
+import com.example.punch.contract.dto.PunchRecordDTO;
 import com.example.punch.model.PunchRecord;
 import com.example.punch.contract.bo.PunchRecordBO;
 import com.example.punch.model.PunchRecordExp;
+import com.example.punch.model.SysConfig;
 import com.example.punch.service.PunchService;
 import com.example.punch.service.inner.PunchDBService;
 import com.example.punch.service.inner.PunchFileService;
@@ -97,14 +99,14 @@ public class PunchServiceImpl implements PunchService {
     }
 
     @Override
-    public List<PunchRecordExp> queryAll(String time) throws Exception {
+    public List<PunchRecordExp> queryAll(String time, Integer type) throws Exception {
         List<PunchRecordExp> res = Lists.newArrayList();
 
         String queryDate;
         if (StringUtils.hasText(time)) {
             queryDate = time;
         } else {
-            queryDate = DateUtils.formatDate(new Date(), "yyyy-MM");
+            queryDate = DateUtils.formatDate(new Date(), "yyyy-MM") + "-01";
         }
 
         String storageType = getStorageType();
@@ -113,11 +115,44 @@ public class PunchServiceImpl implements PunchService {
                 res = this.punchFileService.readFromFile(queryDate);
                 break;
             case "1":
-                res = this.punchDBService.readFromDb(queryDate);
+                res = this.punchDBService.readFromDb(queryDate, type);
                 break;
         }
         log.info(">>> Read [{}].", res.size());
         return res;
+    }
+
+    @Override
+    public int editPunch(PunchRecordDTO punchRecordDTO) {
+        log.info(">>> Update data: [{}]", punchRecordDTO);
+
+        int i = 0;
+        String storageType = getStorageType();
+        switch (storageType) {
+            case "0":
+                log.warn(">>> No handle method!");
+                break;
+            case "1":
+                i = this.punchDBService.editPunch(punchRecordDTO);
+                break;
+        }
+        return i;
+    }
+
+    @Override
+    public SysConfig getSysConfig(String configName) {
+        SysConfig sysConfig = null;
+        String storageType = getStorageType();
+        switch (storageType) {
+            case "0":
+                log.warn(">>> No handle method!");
+                break;
+            case "1":
+                sysConfig = this.punchDBService.getSysConfig(configName);
+                break;
+        }
+        log.info(">>> Get config [{}].", sysConfig);
+        return sysConfig;
     }
 
     private String getStorageType() {

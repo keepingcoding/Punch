@@ -8,6 +8,14 @@
         .greenBack {
             background-color: #aff5af;
         }
+
+        .redFont {
+            color: red;
+        }
+
+        .none {
+            display: none;
+        }
     </style>
 
     <script type="text/javascript" src="/js/public/jquery-3.4.1.min.js"></script>
@@ -33,9 +41,23 @@
     <hr/>
     <div>
         <div>
-            <input type="text" class="jeinput" id="jeQueryMonth">
-            <input type="text" class="jeinput" id="jeQueryTime">
-            <button @click="queryRecords">查看打卡记录</button>
+            <div style="display: inline-block;">
+                <span style="font-size: 13px;">月份：</span>
+                <input type="text" class="jeinput" id="jeQueryMonth" style="width: 80px;">
+                <img src="/img/plus.ico" id="plusImg" style="cursor: pointer;" title="添加查询条件" @click="timeTextShowOrHide()">
+            </div>
+            <div id="chooseOnOrOffTypeDiv" style="display: none;">
+                <span style="font-size: 13px;">&emsp;且</span>
+                <select id="chooseOnOrOffType">
+                    <option value="0">上班时间</option>
+                    <option value="1" selected>下班时间</option>
+                </select>
+                <span style="font-size: 10px;">大于等于</span>
+                <input type="text" class="jeinput" id="jeQueryTime" style="width: 80px;">
+            </div>
+            <div style="display: inline-block; margin-left: 30px;">
+                <button @click="queryRecords">查看打卡记录</button>
+            </div>
         </div>
         <br/>
         <div id="tbRecordData" style="display: none;">
@@ -56,15 +78,23 @@
                     <td v-text="index+1" style="text-align: center;"></td>
                     <td v-text="b.dateList" style="text-align: center;"></td>
                     <td v-text="b.weekName" style="text-align: center; font-style: italic;"></td>
-                    <td v-text="b.punchOnTime" style="text-align: center;"></td>
-                    <td v-text="b.punchOffTime" style="text-align: center;"></td>
-                    <template v-if="b.punchStatus==null">
-                        <td v-text="" style="text-align: center;" @click="editPunchType($event, '')"></td>
-                    </template>
-                    <template v-else>
-                        <td v-text="d.name" v-for="d in dic.punchStatus" v-if="d.code==b.punchStatus"
-                            style="text-align: center; color: red;" @click="editPunchType($event, d.name)"></td>
-                    </template>
+                    <td v-text="b.punchOnTime" style="text-align: center;" :class="b.punchStatus==0?'redFont':''"></td>
+                    <td v-text="b.punchOffTime" style="text-align: center;"
+                        :class="b.punchStatus==1||b.punchStatus==2?'redFont':''"></td>
+                    <!--
+                    <template v-if="b.punchStatus==null"></template>
+                    <template v-else></template>
+                    -->
+                    <td style="text-align: center; color: red;" @click="editPunchType('statusStr'+index, b.punchOnTime)">
+                        <select v-model="b.punchStatus" :class="b.punchStatus==null?'none':''"
+                                :id="'statusStr'+index" style="color: red; pointer-events: none;"
+                                @change="recordPunchStatus('statusStr'+index, b.punchStatus, b.id)">
+                            <option value="-1"></option>
+                            <option value="0" style="color: black">迟到</option>
+                            <option value="1" style="color: black">早退</option>
+                            <option value="2" style="color: black">加班</option>
+                        </select>
+                    </td>
                 </tr>
                 </tbody>
             </table>

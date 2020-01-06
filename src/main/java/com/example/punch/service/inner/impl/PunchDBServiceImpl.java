@@ -1,16 +1,23 @@
 package com.example.punch.service.inner.impl;
 
+import com.example.punch.contract.dto.PunchRecordDTO;
 import com.example.punch.contract.vo.PunchRecordVO;
+import com.example.punch.dao.PunchRecordMapper;
+import com.example.punch.dao.SysConfigMapper;
 import com.example.punch.dao.ext.PunchRecordExtMapper;
 import com.example.punch.model.PunchRecord;
 import com.example.punch.model.PunchRecordExp;
+import com.example.punch.model.SysConfig;
+import com.example.punch.model.example.SysConfigExample;
 import com.example.punch.service.inner.PunchDBService;
 import com.example.punch.util.BeanConverter;
 import com.example.punch.util.DateUtils;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,9 +36,11 @@ import static com.example.punch.contract.CommonConstant.PunchType;
 public class PunchDBServiceImpl implements PunchDBService {
 
     @Autowired
+    private SysConfigMapper sysConfigMapper;
+
+    @Autowired
     private PunchRecordExtMapper punchRecordExtMapper;
 
-    /** 获取打卡类型 **/
     @Override
     public Map<String,Object> getPunchType(String date) {
         /*
@@ -93,9 +102,6 @@ public class PunchDBServiceImpl implements PunchDBService {
         return resultMap;
     }
 
-    /**
-     * 写到数据库
-     */
     @Override
     public void writeToDb(PunchRecord punchRecord, Byte punchType) throws Exception {
         switch (punchType) {
@@ -147,17 +153,35 @@ public class PunchDBServiceImpl implements PunchDBService {
         log.info(">>> Update an existing record: [{}].", offWorkRecord);
     }
 
-
-    /** 从数据库读取 **/
     @Override
-    public List<PunchRecordExp> readFromDb(String time) {
+    public List<PunchRecordExp> readFromDb(String time, Integer type) {
         int length = time.length();
-        if (length == 7) {
-            time = time + "-01";
+        if (length == 10) {
             return this.punchRecordExtMapper.queryRecordByMonth(time);
         } else if (length == 19) {
-            return this.punchRecordExtMapper.queryRecordByTime(time);
+            return this.punchRecordExtMapper.queryRecordByTime(time, type);
         }
         return Collections.emptyList();
+    }
+
+    @Override
+    public int editPunch(PunchRecordDTO punchRecordDTO) {
+        PunchRecord punchRecord = new PunchRecord();
+        BeanUtils.copyProperties(punchRecordDTO, punchRecord);
+
+        punchRecord.setUpdatedId(1);
+        punchRecord.setUpdatedTime(System.currentTimeMillis());
+
+        return this.punchRecordExtMapper.editPunchType(punchRecord);
+        //return this.punchRecordMapper.updateByPrimaryKeySelective(punchRecord);
+    }
+
+    @Override
+    public SysConfig getSysConfig(String configName) {
+        SysConfigExample example = new SysConfigExample();
+        SysConfigExample.Criteria criteria = example.createCriteria();
+        criteria.andConfigNameEqualTo(configName);
+        List<SysConfig> sysConfigs = this.sysConfigMapper.selectByExample(example);
+        return CollectionUtils.isEmpty(sysConfigs) ? null : sysConfigs.get(0);
     }
 }

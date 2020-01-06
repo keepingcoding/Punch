@@ -157,49 +157,58 @@ public interface PunchRecordExtMapper {
 
     @ResultMap("ExpResultMap")
     @Select(
-            "<script>                                          "+
-            "	SELECT                                         "+
-            "		t.date_list,                               "+
-            "		CASE                                       "+
-            "			DAYOFWEEK( t.date_list )               "+
-            "			WHEN 1 THEN                            "+
-            "			'星期日'                               "+
-            "			WHEN 2 THEN                            "+
-            "			'星期一'                               "+
-            "			WHEN 3 THEN                            "+
-            "			'星期二'                               "+
-            "			WHEN 4 THEN                            "+
-            "			'星期三'                               "+
-            "			WHEN 5 THEN                            "+
-            "			'星期四'                               "+
-            "			WHEN 6 THEN                            "+
-            "			'星期五'                               "+
-            "			WHEN 7 THEN                            "+
-            "			'星期六'                               "+
-            "		END week_name,                             "+
-            "		t.id,                                      "+
-            "		t.user_id,                                 "+
-            "		t.punch_on_time,                           "+
-            "		t.punch_off_time,                          "+
-            "		t.punch_status,                            "+
-            "		t.punch_on_addr,                           "+
-            "		t.punch_off_addr,                          "+
-            "		t.on_remark,                               "+
-            "		t.off_remark                               "+
-            "	FROM                                           "+
-            "		t_punch_record t                           "+
-            "	WHERE                                          "+
-            "		MONTH(t.punch_day) = MONTH(#{startTime})   "+
-            "		<if test='type == 0'>                      "+
-            "			t.punch_on_time &gt; #{startTime}      "+
-            "		</if>                                      "+
-            "		<if test='type == 1'>                      "+
-            "			t.punch_off_time &gt; #{startTime}     "+
-            "		</if>                                      "+
-            "	ORDER BY                                       "+
-            "		t.date_list ASC                            "+
-            "</script>                                         "
-
+            "<script>                                                           "+
+            "  SELECT                                                           "+
+            "    t.punch_day date_list,                                         "+
+            "    CASE                                                           "+
+            "      DAYOFWEEK( t.punch_day )                                     "+
+            "      WHEN 1 THEN                                                  "+
+            "      '星期日'                                                     "+
+            "      WHEN 2 THEN                                                  "+
+            "      '星期一'                                                     "+
+            "      WHEN 3 THEN                                                  "+
+            "      '星期二'                                                     "+
+            "      WHEN 4 THEN                                                  "+
+            "      '星期三'                                                     "+
+            "      WHEN 5 THEN                                                  "+
+            "      '星期四'                                                     "+
+            "      WHEN 6 THEN                                                  "+
+            "      '星期五'                                                     "+
+            "      WHEN 7 THEN                                                  "+
+            "      '星期六'                                                     "+
+            "    END week_name,                                                 "+
+            "    t.id,                                                          "+
+            "    t.user_id,                                                     "+
+            "    t.punch_on_time,                                               "+
+            "    t.punch_off_time,                                              "+
+            "    t.punch_status,                                                "+
+            "    t.punch_on_addr,                                               "+
+            "    t.punch_off_addr,                                              "+
+            "    t.on_remark,                                                   "+
+            "    t.off_remark                                                   "+
+            "  FROM                                                             "+
+            "    t_punch_record t                                               "+
+            "  WHERE                                                            "+
+            "    SUBSTR(t.punch_day, 1 ,7) = SUBSTR(#{startTime}, 1, 7)         "+
+            "    <if test='type == 0'>                                          "+
+            "      AND TIME(t.punch_on_time) &gt;= SUBSTR(#{startTime}, 12, 5)  "+
+            "    </if>                                                          "+
+            "    <if test='type == 1'>                                          "+
+            "      AND TIME(t.punch_off_time) &gt;= SUBSTR(#{startTime}, 12, 5) "+
+            "    </if>                                                          "+
+            "  ORDER BY                                                         "+
+            "    t.punch_day ASC                                                "+
+            "</script>                                                          "
     )
-    List<PunchRecordExp> queryRecordByTime(String startTime);
+    List<PunchRecordExp> queryRecordByTime(@Param("startTime") String startTime, @Param("type") Integer type);
+
+    @Update(
+            "  UPDATE t_punch_record                   "+
+            "  SET punch_status = #{punchStatus},      "+
+            "    updated_id = #{updatedId},            "+
+            "    updated_time = #{updatedTime}         "+
+            "  WHERE                                   "+
+            "    id = #{id}                            "
+    )
+    int editPunchType(PunchRecord punchRecord);
 }

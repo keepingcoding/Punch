@@ -8,12 +8,27 @@ var app = new Vue({
         timer1: null,
         timer2: null,
         nowTime: '',
+        offTime: '',
         punchType: null,
         punchTypeStr: '打卡',
         items: [],
         punchShow: ''
     },
     methods: {
+        getOffTime: function () {
+            var _this = this;
+            axios({
+                method: 'POST',
+                url: '/getSysConfig',
+                headers: {'Content-Type': 'application/json'},
+                data: "OFF_WORK_TIME",
+            }).then(function (res) {
+                console.log(res)
+                if (res.data.success) {
+                    _this.offTime = res.data.result.configValue;
+                }
+            });
+        },
         getPunchType: function () {
             var _this = this;
             axios({
@@ -64,14 +79,15 @@ var app = new Vue({
             var _this = this;
             var queryDate = $('#jeQueryMonth').val();
             var queryTime = $('#jeQueryTime').val();
-            var param = queryDate;
+            var url = '/queryByDate';
+            var param = queryDate + '-01';
             if (queryTime != '') {
-                param += '-01 ' + queryTime;
+                url += '/' + $('#chooseOnOrOffType').val();
+                param += ' ' + queryTime + ':00';
             }
-
             axios({
                 method: 'POST',
-                url: '/queryByDate',
+                url: url,
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -83,16 +99,37 @@ var app = new Vue({
                 console.log(err);
             });
         },
-        editPunchType: function (e, t) {
-            console.log(e.target)
-            console.log(t)
-            console.log(this)
-            $(e.target).appendChild("<a href='www.baidu.com'>测试</a>")
+        timeTextShowOrHide: function () {
+            $('#plusImg').hide();
+            $('#chooseOnOrOffTypeDiv').css("display", "inline-block");
+        },
+        editPunchType: function (i, t) {
+            if (t != null) {
+                //$('#' + i).removeAttr("disabled");
+                $('#' + i).css("pointer-events", "auto");
+                $('#' + i).show();
+            }
+        },
+        recordPunchStatus: function (i, s, b) {
+            if (s == -1) {
+                s = null;
+                $('#' + i).hide();
+            }
+            var param = {"id": b, "punchStatus": s};
+            axios({
+                method: 'POST',
+                url: "/editPunchStatus",
+                headers: {'Content-Type': 'application/json'},
+                data: param,
+            }).catch(function (err) {
+                console.log(err);
+            });
         }
     },
     created: function () {
         this.nowTime = this.formatDate();
         this.getPunchType();
+        this.getOffTime();
     },
     mounted: function () {
         var _this = this;
@@ -134,13 +171,26 @@ var app = new Vue({
         jeDate("#jeQueryMonth", {
             format: "YYYY-MM",
             maxDate: jeDate.nowDate(0, "YYYY-MM"),
-            onClose: true,
-            isinitVal: true
+            onClose: false, // not work
+            isinitVal: true,
+            isClear: false,
+            isToday: false,
+            //isYes: false
         });
 
+        console.log(app.offTime)
+
+        var hhTime = _this.offTime.slice(0, 2);
+        var mmTime = _this.offTime.slice(3, 4);
+        console.log(hhTime, mmTime)
         jeDate("#jeQueryTime", {
-            format: "hh:mm:ss",
-            onClose: true
+            format: "hh:mm",
+            isinitVal: true,
+            initDate: [{hh: hhTime, mm: mmTime}, false],
+            clearfun: function (elem, val) {
+                $('#chooseOnOrOffTypeDiv').css("display", "none");
+                $('#plusImg').show();
+            }
         });
     },
     beforeDestory: function () {

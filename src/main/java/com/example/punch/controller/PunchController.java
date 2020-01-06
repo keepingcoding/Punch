@@ -5,8 +5,10 @@ import com.example.punch.contract.BaseResponse;
 import com.example.punch.contract.ServiceStatus;
 import com.example.punch.contract.bo.PunchRecordBO;
 import com.example.punch.contract.dto.PunchNotesDTO;
+import com.example.punch.contract.dto.PunchRecordDTO;
 import com.example.punch.contract.vo.PunchRecordVO;
 import com.example.punch.model.PunchRecordExp;
+import com.example.punch.model.SysConfig;
 import com.example.punch.service.PunchService;
 import com.example.punch.util.BeanConverter;
 import com.example.punch.util.ValidationUtils;
@@ -17,12 +19,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author zzs
@@ -84,9 +88,17 @@ public class PunchController {
         return baseResponse;
     }
 
-    @PostMapping("/queryByDate")
-    public BaseResponse<List<PunchRecordVO>> queryByDate(
-            @RequestBody(required = false) @Valid @Pattern(regexp = "^([0-9]{4}-(0[1-9]|1[0-2]))(|(-01 (0[1-9]|1[0-9]|2[0-4]):([0-5][0-9]):([0-5][0-9])))$") String time,
+    /**
+     * 查询打卡记录
+     *
+     * @param type
+     * @param time
+     * @param bindingResult
+     * @return
+     */
+    @PostMapping({"/queryByDate", "/queryByDate/{type}"})
+    public BaseResponse<List<PunchRecordVO>> queryByDate(@PathVariable Optional<Integer> type,
+            @RequestBody(required = false) @Valid @Pattern(regexp = "^([0-9]{4}-(0[1-9]|1[0-2])-01)(|( (0[1-9]|1[0-9]|2[0-4]):([0-5][0-9]):([0-5][0-9])))$") String time,
             BindingResult bindingResult) {
         long beginTime = System.currentTimeMillis();
         if (bindingResult.hasErrors()) {
@@ -108,11 +120,43 @@ public class PunchController {
 
         BaseResponse<List<PunchRecordVO>> baseResponse = new BaseResponse<>();
         try {
-            List<PunchRecordExp> list = this.punchService.queryAll(time);
+            List<PunchRecordExp> list = this.punchService.queryAll(time, type.orElse(null));
             List<PunchRecordVO> res = BeanConverter.convert(list, new TypeReference<List<PunchRecordVO>>() {});
             baseResponse.setResult(res).calcCostTime(beginTime);
         } catch (Exception e) {
             log.error("查询list出现异常", e);
+            baseResponse.setSuccess(false).setResultCode(ServiceStatus.GENERAL_ERROR.getCode())
+                    .setResultMsg(e.getMessage()).calcCostTime(beginTime);
+        }
+        return baseResponse;
+    }
+
+    /**
+     * 修改
+     *
+     * @param punchRecordDTO
+     */
+    @PostMapping("/editPunchStatus")
+    public BaseResponse editPunchStatus(@RequestBody PunchRecordDTO punchRecordDTO) {
+        long beginTime = System.currentTimeMillis();
+        if (punchRecordDTO.getId() == null) {
+            log.warn(">>> 未传入正确的参数");
+            Map<String, List<String>> validationErrors = new HashMap<>();
+            ArrayList<String> str = new ArrayList<>();
+            str.add("must not be null");
+            validationErrors.put("id", str);
+
+            BaseResponse baseResponse = new BaseResponse();
+            baseResponse.calcCostTime(beginTime);
+            return baseResponse;
+        }
+
+        BaseResponse baseResponse = new BaseResponse();
+        try {
+            this.punchService.editPunch(punchRecordDTO);
+            baseResponse.calcCostTime(beginTime);
+        } catch (Exception e) {
+            log.error("修改打卡记录出现异常", e);
             baseResponse.setSuccess(false).setResultCode(ServiceStatus.GENERAL_ERROR.getCode())
                     .setResultMsg(e.getMessage()).calcCostTime(beginTime);
         }
@@ -128,6 +172,27 @@ public class PunchController {
             }
         }
 
+    }
+
+    /**
+     * 获取配置
+     *
+     * @param configName
+     * @return
+     */
+    @PostMapping("/getSysConfig")
+    public BaseResponse<SysConfig> getSysConfig(@RequestBody String configName) {
+        long beginTime = System.currentTimeMillis();
+        BaseResponse baseResponse = new BaseResponse();
+        try {
+            SysConfig sysConfig = this.punchService.getSysConfig(configName);
+            baseResponse.setResult(sysConfig).calcCostTime(beginTime);
+        } catch (Exception e) {
+            log.error("获取配置信息出现异常", e);
+            baseResponse.setSuccess(false).setResultCode(ServiceStatus.GENERAL_ERROR.getCode())
+                    .setResultMsg(e.getMessage()).calcCostTime(beginTime);
+        }
+        return baseResponse;
     }
 
 }

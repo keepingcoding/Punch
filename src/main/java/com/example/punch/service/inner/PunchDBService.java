@@ -1,7 +1,9 @@
 package com.example.punch.service.inner;
 
+import com.example.punch.contract.dto.PunchRecordDTO;
 import com.example.punch.model.PunchRecord;
 import com.example.punch.model.PunchRecordExp;
+import com.example.punch.model.SysConfig;
 
 import java.util.List;
 import java.util.Map;
@@ -21,5 +23,11 @@ public interface PunchDBService {
     void writeToDb(PunchRecord punchRecord, Byte punchType) throws Exception;
 
     /** 读取打卡记录 **/
-    List<PunchRecordExp> readFromDb(String time);
+    List<PunchRecordExp> readFromDb(String time, Integer type);
+
+    /** 修改 **/
+    int editPunch(PunchRecordDTO punchRecordDTO);
+
+    /** 获取配置 **/
+    SysConfig getSysConfig(String configName);
 }
