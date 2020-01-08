@@ -23,9 +23,21 @@ var app = new Vue({
                 headers: {'Content-Type': 'application/json'},
                 data: "OFF_WORK_TIME",
             }).then(function (res) {
-                console.log(res)
                 if (res.data.success) {
-                    _this.offTime = res.data.result.configValue;
+                    var t = res.data.result.configValue;
+                    _this.offTime = t;
+
+                    var hhTime = t.slice(0, 2);
+                    var mmTime = t.slice(3, 5);
+                    jeDate("#jeQueryTime", {
+                        format: "hh:mm",
+                        isinitVal: true,
+                        initDate: [{hh: hhTime, mm: mmTime}, false],
+                        clearfun: function (elem, val) {
+                            $('#chooseOnOrOffTypeDiv').css("display", "none");
+                            $('#plusImg').show();
+                        }
+                    });
                 }
             });
         },
@@ -129,10 +141,10 @@ var app = new Vue({
     created: function () {
         this.nowTime = this.formatDate();
         this.getPunchType();
-        this.getOffTime();
     },
     mounted: function () {
         var _this = this;
+
         this.timer1 = setInterval(function () {
             _this.nowTime = _this.formatDate();
         }, 1000);
@@ -178,20 +190,7 @@ var app = new Vue({
             //isYes: false
         });
 
-        console.log(app.offTime)
-
-        var hhTime = _this.offTime.slice(0, 2);
-        var mmTime = _this.offTime.slice(3, 4);
-        console.log(hhTime, mmTime)
-        jeDate("#jeQueryTime", {
-            format: "hh:mm",
-            isinitVal: true,
-            initDate: [{hh: hhTime, mm: mmTime}, false],
-            clearfun: function (elem, val) {
-                $('#chooseOnOrOffTypeDiv').css("display", "none");
-                $('#plusImg').show();
-            }
-        });
+        _this.getOffTime();
     },
     beforeDestory: function () {
         if (this.timer1) {
