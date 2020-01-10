@@ -114,6 +114,19 @@ var app = new Vue({
         timeTextShowOrHide: function () {
             $('#plusImg').hide();
             $('#chooseOnOrOffTypeDiv').css("display", "inline-block");
+
+            var _this = this;
+            var hhTime = _this.offTime.slice(0, 2);
+            var mmTime = _this.offTime.slice(3, 5);
+            jeDate("#jeQueryTime", {
+                format: "hh:mm",
+                isinitVal: true,
+                initDate: [{hh: hhTime, mm: mmTime}, false],
+                clearfun: function (elem, val) {
+                    $('#chooseOnOrOffTypeDiv').css("display", "none");
+                    $('#plusImg').show();
+                }
+            });
         },
         editPunchType: function (i, t) {
             if (t != null) {
