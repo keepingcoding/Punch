@@ -26,18 +26,6 @@ var app = new Vue({
                 if (res.data.success) {
                     var t = res.data.result.configValue;
                     _this.offTime = t;
-
-                    var hhTime = t.slice(0, 2);
-                    var mmTime = t.slice(3, 5);
-                    jeDate("#jeQueryTime", {
-                        format: "hh:mm",
-                        isinitVal: true,
-                        initDate: [{hh: hhTime, mm: mmTime}, false],
-                        clearfun: function (elem, val) {
-                            $('#chooseOnOrOffTypeDiv').css("display", "none");
-                            $('#plusImg').show();
-                        }
-                    });
                 }
             });
         },
@@ -154,6 +142,7 @@ var app = new Vue({
     created: function () {
         this.nowTime = this.formatDate();
         this.getPunchType();
+        this.getOffTime();
     },
     mounted: function () {
         var _this = this;
@@ -202,8 +191,6 @@ var app = new Vue({
             isToday: false,
             //isYes: false
         });
-
-        _this.getOffTime();
     },
     beforeDestory: function () {
         if (this.timer1) {
